@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # 1. PostgreSQL Relational Database Service
+  # ============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: connecthub-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: connecthub_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./connecthub-db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./connecthub-db/indexes.sql:/docker-entrypoint-initdb.d/02-indexes.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d connecthub_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - connecthub-net
+
+  # ============================================================================
+  # 2. Spring Boot 4 Backend Service (REST APIs, Security & STOMP WebSockets)
+  # ============================================================================
+  backend:
+    build:
+      context: ./connecthub-backend
+      dockerfile: Dockerfile
+    container_name: connecthub-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/connecthub_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "false"
+    ports:
+      - "8080:8080"
+    volumes:
+      - backend_uploads:/app/uploads
+    networks:
+      - connecthub-net
+
+  # ============================================================================
+  # 3. React Vite Frontend Service (Nginx Reverse Proxy & Neumorphic UI)
+  # ============================================================================
+  frontend:
+    build:
+      context: ./connecthub-frontend
+      dockerfile: Dockerfile
+    container_name: connecthub-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+      - "5173:80"
+    networks:
+      - connecthub-net
+
+# ============================================================================
+# Networks & Persistent Storage Volumes
+# ============================================================================
+networks:
+  connecthub-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  backend_uploads:
+    driver: local

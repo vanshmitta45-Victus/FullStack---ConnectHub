@@ -1,0 +1,148 @@
+name: ConnectHub CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master, dev ]
+
+jobs:
+  # ==========================================================================
+  # 1. Backend Testing & Build (JUnit 5 & Mockito)
+  # ==========================================================================
+  backend-test-and-build:
+    name: Backend Unit & Integration Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: connecthub_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password123
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21 (Eclipse Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Grant Execute Permission to Maven Wrapper
+        run: chmod +x connecthub-backend/mvnw
+
+      - name: Run Backend Unit & Integration Tests (JUnit 5 & Mockito)
+        working-directory: ./connecthub-backend
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/connecthub_db
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: password123
+        run: ./mvnw clean test
+
+      - name: Package Spring Boot Executable JAR
+        working-directory: ./connecthub-backend
+        run: ./mvnw package -DskipTests
+
+      - name: Upload Backend Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: connecthub-backend-jar
+          path: connecthub-backend/target/*.jar
+
+  # ==========================================================================
+  # 2. Frontend Testing & Build (React Testing Library & Vitest)
+  # ==========================================================================
+  frontend-test-and-build:
+    name: Frontend Component & Neumorphic UI Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: connecthub-frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: ./connecthub-frontend
+        run: npm ci
+
+      - name: Run ESLint / Oxlint Linter
+        working-directory: ./connecthub-frontend
+        run: npm run lint
+
+      - name: Run React Testing Library Component Tests
+        working-directory: ./connecthub-frontend
+        run: npm test
+
+      - name: Build Vite Production Assets
+        working-directory: ./connecthub-frontend
+        run: npm run build
+
+      - name: Upload Frontend Static Bundle Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: connecthub-frontend-dist
+          path: connecthub-frontend/dist/
+
+  # ==========================================================================
+  # 3. Selenium E2E Automation Verification
+  # ==========================================================================
+  e2e-selenium-verification:
+    name: Selenium Automated E2E Browser Testing
+    runs-on: ubuntu-latest
+    needs: [backend-test-and-build, frontend-test-and-build]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Set up Google Chrome (Headless)
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Verify Selenium Test Automation Compilation
+        working-directory: ./connecthub-automation
+        run: mvn test-compile
+
+  # ==========================================================================
+  # 4. Dockerization & Compose Verification
+  # ==========================================================================
+  docker-build-verification:
+    name: Docker Containerization Build
+    runs-on: ubuntu-latest
+    needs: [backend-test-and-build, frontend-test-and-build]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose Configuration
+        run: docker compose config
+
+      - name: Build Multi-Stage Docker Images
+        run: docker compose build
