@@ -5,11 +5,8 @@ FROM maven:3.9.9-eclipse-temurin-21-alpine AS builder
 
 WORKDIR /workspace
 
-# Copy Maven POM and pre-fetch dependencies for layer caching
+# Copy source code and Maven descriptors
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
-
-# Copy source code and build production JAR
 COPY src ./src
 RUN mvn clean package -DskipTests -B
 

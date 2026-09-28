@@ -120,10 +120,8 @@ jobs:
           java-version: '21'
           cache: 'maven'
 
-      - name: Set up Google Chrome (Headless)
-        uses: browser-actions/setup-chrome@v1
-        with:
-          chrome-version: stable
+      - name: Verify Google Chrome Installation
+        run: google-chrome --version
 
       - name: Verify Selenium Test Automation Compilation
         working-directory: ./connecthub-automation

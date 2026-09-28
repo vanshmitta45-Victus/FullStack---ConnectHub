@@ -70,20 +70,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             System.out.println("SECURITY ALERT: No Bearer token found in request headers.");
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            System.out.println("Granted Authorities: " + userDetails.getAuthorities());
-
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.getAuthorities());
 
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
-            System.out.println("Authentication securely injected into Context.");
         }
 
-        System.out.println("----------------------------");
         filterChain.doFilter(request, response);
     }
 }
