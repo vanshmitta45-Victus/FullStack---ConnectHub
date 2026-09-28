@@ -21,6 +21,11 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/health")
+    public ResponseEntity<?> health() {
+        return ResponseEntity.ok(Map.of("status", "UP", "service", "connecthub-backend"));
+    }
+
     @PostMapping({"/signup", "/register"})
     public ResponseEntity<?> registerUser(@RequestBody Map<String, String> payload) {
         try {
