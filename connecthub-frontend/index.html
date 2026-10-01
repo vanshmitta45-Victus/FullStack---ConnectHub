@@ -9,7 +9,7 @@
 
     <!-- THIS IS THE FIX FOR THE 'global is not defined' ERROR -->
     <script>
-      if (global === undefined) {
+      if (typeof global === 'undefined') {
         var global = window;
       }
     </script>

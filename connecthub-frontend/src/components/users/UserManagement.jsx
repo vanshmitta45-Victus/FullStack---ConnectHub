@@ -146,7 +146,7 @@ function UserManagement() {
   const fetchDirectory = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get('http://localhost:8080/api/users/directory', {
+      const res = await axios.get('/api/users/directory', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsers(res.data);
@@ -176,7 +176,7 @@ function UserManagement() {
 
     try {
       await axios.put(
-        `http://localhost:8080/api/users/${userId}/role`,
+        `/api/users/${userId}/role`,
         { role: newRole },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -203,7 +203,7 @@ function UserManagement() {
 
     try {
       await axios.put(
-        `http://localhost:8080/api/users/${user.id}/status`,
+        `/api/users/${user.id}/status`,
         { status: nextStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -224,7 +224,7 @@ function UserManagement() {
     if (!window.confirm(`Permanently remove user @${user.username}? This cannot be undone.`)) return;
 
     try {
-      await axios.delete(`http://localhost:8080/api/users/${user.id}`, {
+      await axios.delete(`/api/users/${user.id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsers(prev => prev.filter(u => u.id !== user.id));
@@ -248,7 +248,7 @@ function UserManagement() {
         password: inviteForm.autoPassword ? '' : inviteForm.customPassword
       };
 
-      const res = await axios.post('http://localhost:8080/api/users/invite', payload, {
+      const res = await axios.post('/api/users/invite', payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

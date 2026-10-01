@@ -92,7 +92,7 @@ function Chat() {
         assignedUserId: convertForm.assignedUserId ? Number(convertForm.assignedUserId) : undefined
       };
 
-      const res = await axios.post('http://localhost:8080/api/tasks/create', payload, {
+      const res = await axios.post('/api/tasks/create', payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -136,7 +136,7 @@ function Chat() {
 
   const fetchMyGroups = async () => {
     try {
-      const res = await axios.get('http://localhost:8080/api/chat/groups/my-groups', {
+      const res = await axios.get('/api/chat/groups/my-groups', {
         headers: { Authorization: `Bearer ${token}` }
       });
       const backendGroups = res.data.map((g) => ({
@@ -163,7 +163,7 @@ function Chat() {
 
   const fetchDirectory = async () => {
     try {
-      const res = await axios.get('http://localhost:8080/api/users/list', {
+      const res = await axios.get('/api/users/list', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsers(res.data.filter((u) => u.username !== currentUser));
@@ -176,7 +176,7 @@ function Chat() {
     const ids = messageList.map((m) => m.id).filter(Boolean);
     if (ids.length === 0) return;
     try {
-      const res = await axios.post('http://localhost:8080/api/chat/reactions/batch', ids, {
+      const res = await axios.post('/api/chat/reactions/batch', ids, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const newMap = {};
@@ -194,7 +194,7 @@ function Chat() {
     const ids = messageList.map((m) => m.id).filter(Boolean);
     if (ids.length === 0) return;
     try {
-      const res = await axios.post('http://localhost:8080/api/chat/messages/thread-counts', ids, {
+      const res = await axios.post('/api/chat/messages/thread-counts', ids, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setThreadCounts(res.data);
@@ -212,7 +212,7 @@ function Chat() {
     const timer = setTimeout(async () => {
       setIsSearching(true);
       try {
-        const res = await axios.get('http://localhost:8080/api/chat/search', {
+        const res = await axios.get('/api/chat/search', {
           params: { query: chatSearchText.trim(), channel: selectedRecipient },
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -242,7 +242,7 @@ function Chat() {
     setActiveThreadMessage(message);
     setShowRightPanel(false);
     try {
-      const res = await axios.get(`http://localhost:8080/api/chat/messages/${message.id}/thread`, {
+      const res = await axios.get(`/api/chat/messages/${message.id}/thread`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setThreadReplies(res.data);
@@ -262,7 +262,7 @@ function Chat() {
     if (!isGroup && selectedRecipient !== 'Global') {
       try {
         await axios.put(
-          'http://localhost:8080/api/chat/read',
+          '/api/chat/read',
           { sender: selectedRecipient, recipient: currentUser },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -355,7 +355,7 @@ function Chat() {
         setHasMoreMessages(true);
         setIsLoadingOlder(false);
 
-        const response = await axios.get('http://localhost:8080/api/chat/history/paged', {
+        const response = await axios.get('/api/chat/history/paged', {
           headers,
           params: {
             channel: selectedRecipient,
@@ -397,7 +397,7 @@ function Chat() {
 
       try {
         const headers = { Authorization: `Bearer ${token}` };
-        const response = await axios.get('http://localhost:8080/api/chat/history/paged', {
+        const response = await axios.get('/api/chat/history/paged', {
           headers,
           params: {
             channel: selectedRecipient,
@@ -434,7 +434,7 @@ function Chat() {
         const headers = { Authorization: `Bearer ${token}` };
         const lastId = messages.reduce((max, m) => (m.id && m.id > max ? m.id : max), 0);
         if (lastId > 0) {
-          const res = await axios.get('http://localhost:8080/api/chat/sync/missed', {
+          const res = await axios.get('/api/chat/sync/missed', {
             headers,
             params: { sinceId: lastId, channelOrUser: selectedRecipientRef.current }
           });
@@ -608,7 +608,7 @@ function Chat() {
     setIsUploading(true);
 
     try {
-      const res = await axios.post('http://localhost:8080/api/chat/files/upload', formData, {
+      const res = await axios.post('/api/chat/files/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
       });
       const payload = {
@@ -642,7 +642,7 @@ function Chat() {
 
     try {
       await axios.post(
-        'http://localhost:8080/api/chat/groups/create',
+        '/api/chat/groups/create',
         { name: newGroupName, description: newGroupDesc },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -659,7 +659,7 @@ function Chat() {
   const handleAddSingleMember = async (username) => {
     try {
       await axios.post(
-        `http://localhost:8080/api/chat/groups/${selectedRecipient}/add-member`,
+        `/api/chat/groups/${selectedRecipient}/add-member`,
         { username },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -673,7 +673,7 @@ function Chat() {
   const handleToggleDisableGroup = async () => {
     try {
       const res = await axios.put(
-        `http://localhost:8080/api/chat/groups/${selectedRecipient}/toggle-disable`,
+        `/api/chat/groups/${selectedRecipient}/toggle-disable`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -687,7 +687,7 @@ function Chat() {
     if (window.confirm(`Remove ${username} from #${selectedRecipient}?`)) {
       try {
         await axios.post(
-          `http://localhost:8080/api/chat/groups/${selectedRecipient}/remove-member`,
+          `/api/chat/groups/${selectedRecipient}/remove-member`,
           { username },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -703,8 +703,8 @@ function Chat() {
     if (window.confirm('Permanently clear this conversation?')) {
       try {
         const headers = { Authorization: `Bearer ${token}` };
-        if (isGroup) await axios.delete(`http://localhost:8080/api/chat/clear/group?groupName=${selectedRecipient}`, { headers });
-        else await axios.delete(`http://localhost:8080/api/chat/clear/private?user1=${currentUser}&user2=${selectedRecipient}`, { headers });
+        if (isGroup) await axios.delete(`/api/chat/clear/group?groupName=${selectedRecipient}`, { headers });
+        else await axios.delete(`/api/chat/clear/private?user1=${currentUser}&user2=${selectedRecipient}`, { headers });
         setMessages([]);
         setReactionsMap({});
         closeThread();

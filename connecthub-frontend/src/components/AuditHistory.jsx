@@ -17,7 +17,7 @@ function AuditHistory() {
     setIsLoading(true);
     try {
       const headers = { Authorization: `Bearer ${token}` };
-      const res = await axios.get('http://localhost:8080/api/audit/all', {
+      const res = await axios.get('/api/audit/all', {
         headers,
         params: {
           entityType: entityFilter !== 'ALL' ? entityFilter : undefined,

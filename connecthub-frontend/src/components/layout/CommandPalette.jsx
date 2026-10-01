@@ -36,13 +36,13 @@ function CommandPalette({ isOpen, onClose }) {
   useEffect(() => {
     if (isOpen && token) {
       const headers = { Authorization: `Bearer ${token}` };
-      axios.get('http://localhost:8080/api/tasks/all', { headers })
+      axios.get('/api/tasks/all', { headers })
         .then(res => setTasks(res.data))
         .catch(() => {});
-      axios.get('http://localhost:8080/api/users/directory', { headers })
+      axios.get('/api/users/directory', { headers })
         .then(res => setUsers(res.data))
         .catch(() => {});
-      axios.get('http://localhost:8080/api/audit/all', { headers })
+      axios.get('/api/audit/all', { headers })
         .then(res => setAuditLogs(res.data))
         .catch(() => {});
     }

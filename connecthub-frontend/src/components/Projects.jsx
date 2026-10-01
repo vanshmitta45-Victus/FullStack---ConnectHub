@@ -31,7 +31,7 @@ function Projects() {
         { id: 'm4', title: 'M4: Production General Availability (GA)', date: '2026-10-30', status: 'PLANNED' }
       ],
       assets: [
-        { title: 'Backend REST API & Swagger Specs', type: 'API Spec', url: 'http://localhost:8080/api/tasks/all', icon: '⚡' },
+        { title: 'Backend REST API & Swagger Specs', type: 'API Spec', url: '/api/tasks/all', icon: '⚡' },
         { title: 'Figma B2B SaaS Design System Tokens', type: 'Design', url: '#figma', icon: '🎨' },
         { title: 'PostgreSQL Schema & Migration Scripts', type: 'Database', url: '#schema', icon: '🗄️' },
         { title: 'GitHub Core Repository', type: 'Source Code', url: 'https://github.com', icon: '🐙' }
@@ -76,7 +76,7 @@ function Projects() {
       ],
       assets: [
         { title: 'RBAC Security Governance Spec', type: 'Document', url: '#sec-spec', icon: '🛡️' },
-        { title: 'Audit Trail Export Engine', type: 'API', url: 'http://localhost:8080/api/audit/all', icon: '📜' }
+        { title: 'Audit Trail Export Engine', type: 'API', url: '/api/audit/all', icon: '📜' }
       ]
     },
     {
@@ -112,7 +112,7 @@ function Projects() {
 
   useEffect(() => {
     if (token) {
-      axios.get('http://localhost:8080/api/tasks/all', {
+      axios.get('/api/tasks/all', {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => setTasks(res.data))
