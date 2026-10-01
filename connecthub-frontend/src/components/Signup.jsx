@@ -21,7 +21,7 @@ function Signup() {
     setError('');
 
     try {
-      await axios.post('http://localhost:8080/api/auth/register', { username, password });
+      await axios.post('/api/auth/register', { username, password });
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.error || err.response?.data?.message || 'Registration failed. Username may already exist.');

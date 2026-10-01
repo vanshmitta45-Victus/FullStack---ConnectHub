@@ -14,11 +14,13 @@ export const websocketService = {
         currentUsername = username;
         currentOnMessageReceived = onMessageReceived;
         const token = localStorage.getItem('token');
+        const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+        const WS_URL = `${API_BASE}/ws`;
 
         stompClient = new Client({
             // Dynamic factory so each reconnection attempt creates a fresh SockJS transport
-            webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
-            connectHeaders: { Authorization: `Bearer ${token}` },
+            webSocketFactory: () => new SockJS(WS_URL),
+            ...(token ? { connectHeaders: { Authorization: `Bearer ${token}` } } : {}),
             // Auto-reconnect silently every 4 seconds if network drops momentarily
             reconnectDelay: 4000,
             heartbeatIncoming: 10000,

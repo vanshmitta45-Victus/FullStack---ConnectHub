@@ -77,8 +77,8 @@ function Teams() {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       const [usersRes, tasksRes] = await Promise.all([
-        axios.get('http://localhost:8080/api/users/directory', { headers }).catch(() => ({ data: [] })),
-        axios.get('http://localhost:8080/api/tasks/all', { headers }).catch(() => ({ data: [] }))
+        axios.get('/api/users/directory', { headers }).catch(() => ({ data: [] })),
+        axios.get('/api/tasks/all', { headers }).catch(() => ({ data: [] }))
       ]);
       setUsers(usersRes.data);
       setTasks(tasksRes.data);
@@ -150,7 +150,7 @@ function Teams() {
 
     try {
       await axios.put(
-        `http://localhost:8080/api/tasks/${rebalanceTask.id}`,
+        `/api/tasks/${rebalanceTask.id}`,
         { assignedUsername: targetAssignee },
         { headers: { Authorization: `Bearer ${token}` } }
       );

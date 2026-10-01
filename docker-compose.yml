@@ -62,7 +62,6 @@ services:
       - backend
     ports:
       - "80:80"
-      - "5173:80"
     networks:
       - connecthub-net
 

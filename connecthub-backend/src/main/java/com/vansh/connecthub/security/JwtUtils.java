@@ -2,23 +2,30 @@ package com.vansh.connecthub.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtUtils {
-    private final String jwtSecret = "secretKey000000000000000000000000000000000000000000000000000000000000";
-    private final long jwtExpirationMs = 7L * 24 * 60 * 60 * 1000; // 7 Days (604,800,000 ms)
+    @Value("${app.jwt.secret:secretKey000000000000000000000000000000000000000000000000000000000000}")
+    private String jwtSecret;
 
-    private final Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    @Value("${app.jwt.expiration-ms:604800000}")
+    private long jwtExpirationMs;
+
+    private Key key() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+    }
 
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -27,13 +34,13 @@ public class JwtUtils {
     }
 
     public String getUsernameFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build()
+        return Jwts.parserBuilder().setSigningKey(key()).build()
                 .parseClaimsJws(token).getBody().getSubject();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
             System.err.println("JWT Expired: " + e.getMessage());

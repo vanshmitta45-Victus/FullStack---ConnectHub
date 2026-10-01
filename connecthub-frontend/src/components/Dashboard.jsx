@@ -25,9 +25,9 @@ function Dashboard() {
       try {
         const headers = { Authorization: `Bearer ${token}` };
         const [tasksRes, usersRes, auditRes] = await Promise.all([
-          axios.get('http://localhost:8080/api/tasks/all', { headers }).catch(() => ({ data: [] })),
-          axios.get('http://localhost:8080/api/users/directory', { headers }).catch(() => ({ data: [] })),
-          axios.get('http://localhost:8080/api/audit/all', { headers }).catch(() => ({ data: [] }))
+          axios.get('/api/tasks/all', { headers }).catch(() => ({ data: [] })),
+          axios.get('/api/users/directory', { headers }).catch(() => ({ data: [] })),
+          axios.get('/api/audit/all', { headers }).catch(() => ({ data: [] }))
         ]);
         setTasks(tasksRes.data);
         setUsers(usersRes.data);
@@ -87,7 +87,7 @@ function Dashboard() {
   const handleQuickUpdateStatus = async (taskId, newStatus) => {
     try {
       await axios.put(
-        `http://localhost:8080/api/tasks/${taskId}/status`,
+        `/api/tasks/${taskId}/status`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );

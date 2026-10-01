@@ -15,7 +15,7 @@ function MyWork() {
     const fetchMyTasks = async () => {
       setIsLoading(true);
       try {
-        const res = await axios.get(`http://localhost:8080/api/tasks/all?assignee=${currentUser}`, {
+        const res = await axios.get(`/api/tasks/all?assignee=${currentUser}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setTasks(res.data);
@@ -32,7 +32,7 @@ function MyWork() {
   const handleUpdateStatus = async (taskId, newStatus) => {
     try {
       await axios.put(
-        `http://localhost:8080/api/tasks/${taskId}/status`,
+        `/api/tasks/${taskId}/status`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -14,7 +14,7 @@ function AdminDashboard() {
 
     const fetchUsers = async () => {
         try {
-            const res = await axios.get('http://localhost:8080/api/users/all', { headers });
+            const res = await axios.get('/api/users/all', { headers });
             setUsers(res.data);
         } catch (err) { console.error('Failed to fetch users'); }
     };
@@ -22,7 +22,7 @@ function AdminDashboard() {
     const handleCreateUser = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:8080/api/users/create', formData, { headers });
+            await axios.post('/api/users/create', formData, { headers });
             setShowModal(false);
             setFormData({ username: '', email: '', password: '', role: 'EMPLOYEE' });
             fetchUsers();
@@ -32,7 +32,7 @@ function AdminDashboard() {
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this user?')) return;
         try {
-            await axios.delete(`http://localhost:8080/api/users/${id}`, { headers });
+            await axios.delete(`/api/users/${id}`, { headers });
             fetchUsers();
         } catch (err) { alert('Deletion failed'); }
     };

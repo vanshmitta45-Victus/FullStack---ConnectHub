@@ -67,8 +67,8 @@ function TaskBoard() {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       const [tasksRes, usersRes] = await Promise.all([
-        axios.get('http://localhost:8080/api/tasks/all', { headers }),
-        axios.get('http://localhost:8080/api/users/directory', { headers }).catch(() => ({ data: [] }))
+        axios.get('/api/tasks/all', { headers }),
+        axios.get('/api/users/directory', { headers }).catch(() => ({ data: [] }))
       ]);
       setTasks(tasksRes.data);
       setUsers(usersRes.data);
@@ -139,7 +139,7 @@ function TaskBoard() {
 
     try {
       await axios.put(
-        `http://localhost:8080/api/tasks/${draggedTaskId}/status`,
+        `/api/tasks/${draggedTaskId}/status`,
         { status: targetStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -170,7 +170,7 @@ function TaskBoard() {
         comments: JSON.stringify([])
       };
 
-      const res = await axios.post('http://localhost:8080/api/tasks/create', payload, {
+      const res = await axios.post('/api/tasks/create', payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -220,7 +220,7 @@ function TaskBoard() {
         assignedUsername: mergedTask.assignedUser ? mergedTask.assignedUser.username : null
       };
 
-      await axios.put(`http://localhost:8080/api/tasks/${selectedTask.id}`, payload, {
+      await axios.put(`/api/tasks/${selectedTask.id}`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
     } catch (err) {
@@ -281,7 +281,7 @@ function TaskBoard() {
   const handleDeleteTask = async (taskId) => {
     if (!window.confirm(`Delete issue TSK-${taskId}? This action cannot be undone.`)) return;
     try {
-      await axios.delete(`http://localhost:8080/api/tasks/${taskId}`, {
+      await axios.delete(`/api/tasks/${taskId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTasks(prev => prev.filter(t => t.id !== taskId));
