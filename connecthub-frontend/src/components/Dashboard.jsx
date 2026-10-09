@@ -628,7 +628,7 @@ function Dashboard() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {auditLogs.slice(0, 6).map(log => (
-                    <div key={log.id} style={{ fontSize: '12px', display: 'flex', gap: '10px', alignItems: 'flex-start', paddingBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+                    <div key={log.id} style={{ fontSize: '12px', display: 'flex', gap: '10px', alignItems: 'flex-start', paddingBottom: '8px', borderBottom: '1px solid rgba(15,23,42,0.1)' }}>
                       <span style={{ fontSize: '14px' }}>⚡</span>
                       <div style={{ flex: 1 }}>
                         <div style={{ color: 'var(--neu-text)', lineHeight: '1.3' }}>{log.actionLog}</div>

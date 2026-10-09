@@ -122,7 +122,7 @@ function Login() {
           marginTop: '20px',
           padding: '12px 14px',
           borderRadius: '12px',
-          background: 'rgba(255, 255, 255, 0.02)',
+          background: 'rgba(15,23,42,0.03)',
           border: '1px solid var(--neu-border)',
           display: 'flex',
           flexDirection: 'column',

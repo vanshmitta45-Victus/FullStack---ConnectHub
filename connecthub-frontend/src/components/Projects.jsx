@@ -254,7 +254,7 @@ function Projects() {
                   </div>
 
                   {/* Metadata Row */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.3)', paddingTop: '14px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(15,23,42,0.12)', paddingTop: '14px' }}>
                     <div>
                       <div style={{ fontSize: '10px', color: 'var(--neu-muted)', textTransform: 'uppercase' }}>LEAD</div>
                       <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--neu-text)' }}>@{proj.lead}</div>
@@ -351,7 +351,7 @@ function Projects() {
           
           {/* Completed Milestones */}
           <div className="neu-panel" style={{ padding: '22px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid rgba(255,255,255,0.4)', paddingBottom: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid rgba(15,23,42,0.14)', paddingBottom: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '14px', color: 'var(--neu-success)' }}>✓</span>
                 <span className="neu-title" style={{ fontSize: '15px' }}>Completed Milestones</span>
@@ -372,7 +372,7 @@ function Projects() {
 
           {/* In Progress Milestones */}
           <div className="neu-panel" style={{ padding: '22px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid rgba(255,255,255,0.4)', paddingBottom: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid rgba(15,23,42,0.14)', paddingBottom: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '14px', color: 'var(--neu-accent)' }}>⚡</span>
                 <span className="neu-title" style={{ fontSize: '15px' }}>Active Sprint Milestones</span>
@@ -393,7 +393,7 @@ function Projects() {
 
           {/* Upcoming Planned Milestones */}
           <div className="neu-panel" style={{ padding: '22px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid rgba(255,255,255,0.4)', paddingBottom: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid rgba(15,23,42,0.14)', paddingBottom: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '14px', color: 'var(--neu-muted)' }}>○</span>
                 <span className="neu-title" style={{ fontSize: '15px' }}>Upcoming & Backlog</span>

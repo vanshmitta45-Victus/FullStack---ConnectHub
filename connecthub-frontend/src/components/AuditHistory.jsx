@@ -190,7 +190,7 @@ function AuditHistory() {
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
-              <tr style={{ borderBottom: '2px solid rgba(255,255,255,0.5)' }}>
+              <tr style={{ borderBottom: '2px solid rgba(15,23,42,0.16)' }}>
                 <th className="neu-subtitle" style={{ padding: '14px 10px', width: '70px' }}>ID</th>
                 <th className="neu-subtitle" style={{ padding: '14px 10px', width: '150px' }}>TIMESTAMP</th>
                 <th className="neu-subtitle" style={{ padding: '14px 10px', width: '140px' }}>ACTOR</th>
@@ -206,7 +206,7 @@ function AuditHistory() {
                 return (
                   <tr
                     key={log.id}
-                    style={{ borderBottom: '1px solid rgba(255,255,255,0.25)', transition: 'background 0.15s' }}
+                    style={{ borderBottom: '1px solid rgba(15,23,42,0.1)', transition: 'background 0.15s' }}
                   >
                     <td style={{ padding: '14px 10px', fontSize: '12px', fontWeight: 'bold', color: 'var(--neu-muted)' }}>
                       #{log.id}

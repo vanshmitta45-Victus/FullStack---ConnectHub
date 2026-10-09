@@ -395,7 +395,7 @@ function Teams() {
                 </div>
 
                 {/* Card Footer Actions */}
-                <div style={{ display: 'flex', gap: '10px', borderTop: '1px solid rgba(255,255,255,0.3)', paddingTop: '16px' }}>
+                <div style={{ display: 'flex', gap: '10px', borderTop: '1px solid rgba(15,23,42,0.12)', paddingTop: '16px' }}>
                   <button
                     className="neu-btn neu-btn-pill"
                     style={{ flex: 1, padding: '8px', fontSize: '12px' }}
@@ -556,7 +556,7 @@ function Teams() {
                   </div>
 
                   {/* Quick Action */}
-                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.3)', paddingTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
+                  <div style={{ borderTop: '1px solid rgba(15,23,42,0.12)', paddingTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
                     <button
                       className="neu-btn neu-btn-pill"
                       style={{ fontSize: '11px', padding: '6px 14px' }}

@@ -45,7 +45,7 @@ function NavigationSidebar({ isCollapsed = false, onToggle }) {
       display: 'flex',
       flexDirection: 'column',
       padding: isCollapsed ? '20px 10px' : '20px 16px',
-      background: 'rgba(8, 13, 24, 0.65)',
+      background: 'rgba(255, 255, 255, 0.7)',
       backdropFilter: 'var(--glass-blur)',
       WebkitBackdropFilter: 'var(--glass-blur)',
       borderRight: '1px solid var(--neu-glass-border)',

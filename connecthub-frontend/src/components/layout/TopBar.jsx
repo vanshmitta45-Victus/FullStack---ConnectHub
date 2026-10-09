@@ -61,7 +61,7 @@ function TopBar({ onToggleSidebar, isCollapsed, onOpenCommandPalette }) {
       padding: '0 32px',
       marginBottom: '8px',
       flexShrink: 0,
-      background: 'rgba(8, 13, 24, 0.45)',
+      background: 'rgba(255, 255, 255, 0.7)',
       backdropFilter: 'var(--glass-blur)',
       WebkitBackdropFilter: 'var(--glass-blur)',
       borderBottom: '1px solid var(--neu-glass-border)'
@@ -222,7 +222,7 @@ function TopBar({ onToggleSidebar, isCollapsed, onOpenCommandPalette }) {
               flexDirection: 'column',
               gap: '6px'
             }}>
-              <div style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.3)', marginBottom: '4px' }}>
+              <div style={{ padding: '8px 10px', borderBottom: '1px solid rgba(15,23,42,0.12)', marginBottom: '4px' }}>
                 <div style={{ fontSize: '11px', color: 'var(--neu-muted)' }}>Signed in as</div>
                 <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--neu-text)' }}>@{currentUser}</div>
               </div>
@@ -251,7 +251,7 @@ function TopBar({ onToggleSidebar, isCollapsed, onOpenCommandPalette }) {
                 <span>User Directory</span>
               </div>
 
-              <div style={{ borderTop: '1px solid rgba(255,255,255,0.3)', marginTop: '4px', paddingTop: '4px' }}>
+              <div style={{ borderTop: '1px solid rgba(15,23,42,0.12)', marginTop: '4px', paddingTop: '4px' }}>
                 <div
                   className="neu-nav-item"
                   style={{ padding: '8px 12px', fontSize: '13px', color: 'var(--neu-danger)' }}

@@ -574,7 +574,7 @@ function TaskBoard() {
                         )}
 
                         {/* Card Footer: Subtask progress, Story Points, Due Date, Assignee */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.3)', paddingTop: '8px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(15,23,42,0.12)', paddingTop: '8px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '11px', color: 'var(--neu-muted)' }}>
                             {/* Story Points */}
                             <span title="Story Points" style={{ fontWeight: '600', color: 'var(--neu-text)' }}>
@@ -633,7 +633,7 @@ function TaskBoard() {
         <div className="neu-panel" style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
-              <tr style={{ borderBottom: '2px solid rgba(255,255,255,0.5)' }}>
+              <tr style={{ borderBottom: '2px solid rgba(15,23,42,0.16)' }}>
                 <th className="neu-subtitle" style={{ padding: '12px' }}>KEY</th>
                 <th className="neu-subtitle" style={{ padding: '12px' }}>TITLE</th>
                 <th className="neu-subtitle" style={{ padding: '12px' }}>STATUS</th>
@@ -653,7 +653,7 @@ function TaskBoard() {
                       setSelectedTask(task);
                       setIsInspectorOpen(true);
                     }}
-                    style={{ borderBottom: '1px solid rgba(255,255,255,0.3)', cursor: 'pointer' }}
+                    style={{ borderBottom: '1px solid rgba(15,23,42,0.12)', cursor: 'pointer' }}
                   >
                     <td style={{ padding: '12px', fontWeight: 'bold', color: 'var(--neu-accent)', fontSize: '12px' }}>
                       TSK-{task.id}
