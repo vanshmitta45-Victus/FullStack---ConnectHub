@@ -61,7 +61,7 @@ function NavigationSidebar({ isCollapsed = false, onToggle }) {
             borderRadius: '14px',
             justifyContent: isCollapsed ? 'center' : 'flex-start'
           }}
-          title="Nexus Workspace"
+          title="Nexus"
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
             <div
@@ -78,11 +78,8 @@ function NavigationSidebar({ isCollapsed = false, onToggle }) {
             </div>
             {!isCollapsed && (
               <div style={{ overflow: 'hidden' }}>
-                <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--neu-text)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                  Nexus Workspace
-                </div>
-                <div style={{ fontSize: '10px', color: 'var(--neu-accent)', fontWeight: 'bold', letterSpacing: '0.5px' }}>
-                  ENTERPRISE SAAS
+                <div style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--neu-text)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                  Nexus
                 </div>
               </div>
             )}

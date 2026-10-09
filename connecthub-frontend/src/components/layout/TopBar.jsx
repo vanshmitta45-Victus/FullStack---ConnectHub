@@ -61,6 +61,8 @@ function TopBar({ onToggleSidebar, isCollapsed, onOpenCommandPalette }) {
       padding: '0 32px',
       marginBottom: '8px',
       flexShrink: 0,
+      position: 'relative',
+      zIndex: 50,
       background: 'rgba(255, 255, 255, 0.7)',
       backdropFilter: 'var(--glass-blur)',
       WebkitBackdropFilter: 'var(--glass-blur)',
