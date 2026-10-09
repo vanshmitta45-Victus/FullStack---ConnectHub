@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ConfirmDialog from '../ConfirmDialog';
 import axios from 'axios';
 
 const ROLES = [
@@ -120,6 +121,7 @@ function UserManagement() {
   const [activeTab, setActiveTab] = useState('ALL'); // ALL, ACTIVE, INVITED, SUSPENDED
   const [searchQuery, setSearchQuery] = useState('');
   const [feedback, setFeedback] = useState({ type: '', message: '' });
+  const [confirmState, setConfirmState] = useState(null); // { type: 'status'|'delete', user }
 
   // Slide-over drawer state
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -188,18 +190,16 @@ function UserManagement() {
   };
 
   // One-Click Status Enforcement (ACTIVE <-> SUSPENDED)
-  const handleToggleStatus = async (user) => {
+  const handleToggleStatus = async () => {
+    const user = confirmState?.user;
+    setConfirmState(null);
+    if (!user) return;
     if (!isManagerOrAdmin) {
       showFeedback('danger', 'Access Denied: Only Admins and Project Managers can update account status.');
       return;
     }
 
     const nextStatus = user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
-    const confirmMsg = user.status === 'ACTIVE'
-      ? `Are you sure you want to suspend @${user.username}? They will lose workspace access immediately.`
-      : `Reactivate account for @${user.username}?`;
-
-    if (!window.confirm(confirmMsg)) return;
 
     try {
       await axios.put(
@@ -215,13 +215,14 @@ function UserManagement() {
   };
 
   // Delete User
-  const handleDeleteUser = async (user) => {
+  const handleDeleteUser = async () => {
+    const user = confirmState?.user;
+    setConfirmState(null);
+    if (!user) return;
     if (!isAdmin) {
       showFeedback('danger', 'Access Denied: Only Workspace Admins can delete user accounts.');
       return;
     }
-
-    if (!window.confirm(`Permanently remove user @${user.username}? This cannot be undone.`)) return;
 
     try {
       await axios.delete(`/api/users/${user.id}`, {
@@ -546,7 +547,7 @@ function UserManagement() {
                                 className={`neu-btn neu-btn-pill ${user.status === 'ACTIVE' ? 'neu-btn-danger' : 'neu-btn-primary'}`}
                                 style={{ padding: '6px 14px', fontSize: '11px', minWidth: '95px' }}
                                 disabled={isSelf}
-                                onClick={() => handleToggleStatus(user)}
+                                onClick={() => setConfirmState({ type: 'status', user })}
                                 title={isSelf ? "You cannot suspend your own account" : ""}
                               >
                                 {user.status === 'ACTIVE' ? 'Suspend' : user.status === 'INVITED' ? 'Activate' : 'Reactivate'}
@@ -557,7 +558,7 @@ function UserManagement() {
                                 <button
                                   className="neu-btn neu-btn-icon neu-btn-danger"
                                   style={{ width: '32px', height: '32px', fontSize: '12px' }}
-                                  onClick={() => handleDeleteUser(user)}
+                                  onClick={() => setConfirmState({ type: 'delete', user })}
                                   title="Revoke / Delete User (Admin Only)"
                                 >
                                   ✕
@@ -875,6 +876,24 @@ function UserManagement() {
           </div>
         </div>
       )}
+
+      {/* SUSPEND / DELETE CONFIRMATION */}
+      <ConfirmDialog
+        open={confirmState !== null}
+        title={confirmState?.type === 'status'
+          ? (confirmState?.user?.status === 'ACTIVE' ? 'Suspend account' : 'Reactivate account')
+          : 'Remove user'}
+        message={confirmState?.type === 'status'
+          ? (confirmState?.user?.status === 'ACTIVE'
+            ? `Suspend @${confirmState?.user?.username}? They will lose workspace access immediately.`
+            : `Reactivate account for @${confirmState?.user?.username}?`)
+          : `Permanently remove user @${confirmState?.user?.username}? This cannot be undone.`}
+        confirmLabel={confirmState?.type === 'status'
+          ? (confirmState?.user?.status === 'ACTIVE' ? 'Suspend' : 'Reactivate')
+          : 'Remove'}
+        onConfirm={() => { confirmState?.type === 'status' ? handleToggleStatus() : handleDeleteUser(); }}
+        onCancel={() => setConfirmState(null)}
+      />
 
     </div>
   );

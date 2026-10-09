@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import ConfirmDialog from './ConfirmDialog';
 
 const COLUMNS = [
   { id: 'BACKLOG', label: 'Backlog', icon: '📥', color: '#64748b' },
@@ -278,8 +279,11 @@ function TaskBoard() {
   };
 
   // Delete Task
-  const handleDeleteTask = async (taskId) => {
-    if (!window.confirm(`Delete issue TSK-${taskId}? This action cannot be undone.`)) return;
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const confirmDeleteTask = async () => {
+    const taskId = deleteTarget;
+    setDeleteTarget(null);
+    if (!taskId) return;
     try {
       await axios.delete(`/api/tasks/${taskId}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -733,7 +737,7 @@ function TaskBoard() {
                 <button
                   className="neu-btn neu-btn-icon neu-btn-danger"
                   style={{ width: '32px', height: '32px', fontSize: '12px' }}
-                  onClick={() => handleDeleteTask(selectedTask.id)}
+                  onClick={() => setDeleteTarget(selectedTask.id)}
                   title="Delete Issue"
                 >
                   🗑️
@@ -1162,6 +1166,16 @@ function TaskBoard() {
           </div>
         </div>
       )}
+
+      {/* DELETE ISSUE CONFIRMATION */}
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete issue"
+        message={deleteTarget !== null ? `Delete issue TSK-${deleteTarget}? This action cannot be undone.` : ''}
+        confirmLabel="Delete"
+        onConfirm={confirmDeleteTask}
+        onCancel={() => setDeleteTarget(null)}
+      />
 
     </div>
   );

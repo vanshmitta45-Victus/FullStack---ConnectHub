@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { websocketService } from '../services/websocketService';
+import ConfirmDialog from './ConfirmDialog';
 
 const AVAILABLE_EMOJIS = ['👍', '❤️', '🚀', '😂', '👀'];
 
@@ -18,6 +19,8 @@ function Chat() {
   const [conversations, setConversations] = useState([]);
   const [showNewDmModal, setShowNewDmModal] = useState(false);
   const [dmSearch, setDmSearch] = useState('');
+  const [removeTarget, setRemoveTarget] = useState(null);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
   const [newGroupDesc, setNewGroupDesc] = useState('');
   const [groups, setGroups] = useState([
@@ -697,9 +700,11 @@ function Chat() {
     }
   };
 
-  const handleRemoveMember = async (username) => {
-    if (window.confirm(`Remove ${username} from #${selectedRecipient}?`)) {
-      try {
+  const handleRemoveMember = async () => {
+    const username = removeTarget;
+    setRemoveTarget(null);
+    if (!username) return;
+    try {
         await axios.post(
           `/api/chat/groups/${selectedRecipient}/remove-member`,
           { username },
@@ -707,15 +712,14 @@ function Chat() {
         );
         await fetchMyGroups();
         if (username === currentUser) selectChat('Global', true);
-      } catch (err) {
-        alert(err.response?.data?.error || 'Failed to remove member.');
-      }
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to remove member.');
     }
   };
 
   const handleClearChat = async () => {
-    if (window.confirm('Permanently clear this conversation?')) {
-      try {
+    setShowClearConfirm(false);
+    try {
         const headers = { Authorization: `Bearer ${token}` };
         if (isGroup) await axios.delete(`/api/chat/clear/group?groupName=${selectedRecipient}`, { headers });
         else await axios.delete(`/api/chat/clear/private?user1=${currentUser}&user2=${selectedRecipient}`, { headers });
@@ -725,7 +729,6 @@ function Chat() {
       } catch (err) {
         alert('Clear chat operation failed.');
       }
-    }
   };
 
   const selectChat = (name, groupFlag) => {
@@ -869,7 +872,7 @@ function Chat() {
           </div>
 
           <div style={{ display: 'flex', gap: '12px' }}>
-            <button className="neu-btn neu-btn-icon neu-btn-danger" onClick={handleClearChat} title="Clear Chat">
+            <button className="neu-btn neu-btn-icon neu-btn-danger" onClick={() => setShowClearConfirm(true)} title="Clear Chat">
               🗑️
             </button>
           </div>
@@ -1214,7 +1217,7 @@ function Chat() {
                           <button
                             className="neu-btn neu-btn-pill neu-btn-danger"
                             style={{ padding: '4px 10px', fontSize: '11px' }}
-                            onClick={() => handleRemoveMember(member)}
+                            onClick={() => setRemoveTarget(member)}
                           >
                             {member === currentUser ? 'Leave' : 'Remove'}
                           </button>
@@ -1288,6 +1291,24 @@ function Chat() {
           </div>
         </div>
       )}
+
+      {/* REMOVE MEMBER / CLEAR CHAT CONFIRMATIONS */}
+      <ConfirmDialog
+        open={removeTarget !== null}
+        title={removeTarget === currentUser ? 'Leave channel' : 'Remove member'}
+        message={removeTarget !== null ? `Remove ${removeTarget} from #${selectedRecipient}?` : ''}
+        confirmLabel={removeTarget === currentUser ? 'Leave' : 'Remove'}
+        onConfirm={handleRemoveMember}
+        onCancel={() => setRemoveTarget(null)}
+      />
+      <ConfirmDialog
+        open={showClearConfirm}
+        title="Clear conversation"
+        message="Permanently clear this conversation? This action cannot be undone."
+        confirmLabel="Clear"
+        onConfirm={handleClearChat}
+        onCancel={() => setShowClearConfirm(false)}
+      />
 
       {/* NEW DIRECT MESSAGE MODAL (search workspace members) */}
       {showNewDmModal && (

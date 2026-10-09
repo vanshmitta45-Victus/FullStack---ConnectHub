@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ConfirmDialog from './ConfirmDialog';
 
 function AdminDashboard() {
     const [users, setUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
     const [formData, setFormData] = useState({ username: '', email: '', password: '', role: 'EMPLOYEE' });
 
     const token = localStorage.getItem('token');
@@ -29,8 +31,10 @@ function AdminDashboard() {
         } catch (err) { alert('Creation failed'); }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this user?')) return;
+    const handleDelete = async () => {
+        const id = deleteId;
+        setDeleteId(null);
+        if (!id) return;
         try {
             await axios.delete(`/api/users/${id}`, { headers });
             fetchUsers();
@@ -84,7 +88,7 @@ function AdminDashboard() {
                                 <td style={{textAlign: 'right', whiteSpace: 'nowrap'}}>
                                     <button className="survey-action-btn">Edit User</button>
                                     <button className="survey-action-btn">Edit Roles</button>
-                                    <button className="survey-action-btn delete" onClick={() => handleDelete(user.id)}>Delete</button>
+                                    <button className="survey-action-btn delete" onClick={() => setDeleteId(user.id)}>Delete</button>
                                 </td>
                             </tr>
                         ))}
@@ -132,6 +136,15 @@ function AdminDashboard() {
                     </div>
                 </div>
             )}
+      {/* DELETE USER CONFIRMATION */}
+      <ConfirmDialog
+        open={deleteId !== null}
+        title="Remove user"
+        message="Are you sure you want to delete this user? This action cannot be undone."
+        confirmLabel="Remove"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteId(null)}
+      />
         </div>
     );
 }
