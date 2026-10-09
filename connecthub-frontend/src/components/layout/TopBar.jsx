@@ -45,7 +45,7 @@ function TopBar({ onToggleSidebar, isCollapsed, onOpenCommandPalette }) {
     if (p.startsWith('/teams')) return { section: 'Organization', current: 'Teams & Rosters' };
     if (p.startsWith('/users')) return { section: 'Administration', current: 'User Directory' };
     if (p.startsWith('/audit')) return { section: 'Compliance', current: 'Audit History' };
-    if (p.startsWith('/chat')) return { section: 'Communications', current: 'Chat & Channels' };
+    if (p.startsWith('/chat')) return { section: '', current: 'Connect' };
     if (p.startsWith('/profile')) return { section: 'Account', current: 'Settings & Profile' };
     return { section: 'Nexus Workspace', current: 'Overview' };
   };
@@ -73,8 +73,12 @@ function TopBar({ onToggleSidebar, isCollapsed, onOpenCommandPalette }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span className="neu-subtitle" style={{ fontSize: '12px' }}>{breadcrumb.section}</span>
-          <span style={{ color: 'var(--neu-muted)', fontSize: '11px' }}>/</span>
+          {breadcrumb.section && (
+            <>
+              <span className="neu-subtitle" style={{ fontSize: '12px' }}>{breadcrumb.section}</span>
+              <span style={{ color: 'var(--neu-muted)', fontSize: '11px' }}>/</span>
+            </>
+          )}
           <span className="neu-title" style={{ fontSize: '15px', color: 'var(--neu-text)' }}>{breadcrumb.current}</span>
         </div>
       </div>
