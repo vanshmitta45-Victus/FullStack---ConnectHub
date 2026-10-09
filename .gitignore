@@ -38,6 +38,14 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Test reports
+allure-results/
+allure-report/
+
+# Local test-runner artifacts (downloaded on demand, see connecthub-automation/README)
+junit-console-standalone.jar
+cp.txt
+
 # User uploads & temporary files
 uploads/*
 **/uploads/*

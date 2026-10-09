@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="ConnectHub API">
+    <test name="API+DB">
+        <classes>
+            <class name="com.sdet.framework.tests.ConnectHubAuthApiTest"/>
+            <class name="com.sdet.framework.tests.ConnectHubTaskApiTest"/>
+            <class name="com.sdet.framework.tests.ConnectHubTaskE2ETest"/>
+        </classes>
+    </test>
+</suite>

@@ -16,7 +16,7 @@ public class NeumorphicStylingE2ETest extends BaseE2ETest {
     @Test
     @DisplayName("Validate that UI components render the Neumorphic styling tokens (box-shadow, border-radius, surfaces)")
     void testNeumorphicStyling() {
-        loginViaLocalStorage(driver, "designer_qa", "token_designer", "MEMBER");
+        loginViaLocalStorage(driver, "designer_qa", realTokenFor("designer_qa", "Password123!"), "MEMBER");
         driver.get(BASE_URL + "/dashboard");
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));

@@ -49,7 +49,10 @@ docker compose up --build
 |----------|-----------------------|
 | Frontend | http://localhost (80)|
 | Backend  | http://localhost:8080 |
-| Postgres | localhost:5432        |
+| Postgres | localhost:5434 (host) |
+
+> Host DB port is `5434` (a system Postgres already occupies `5432` on dev machines).
+> Inside Docker networking the backend still uses `postgres:5432` — only the host mapping differs.
 
 ## Local development
 
@@ -72,10 +75,13 @@ npm run dev
 ```bash
 cd connecthub-frontend && npm ci && npm run lint && npm run test && npm run build
 cd connecthub-backend && ./mvnw clean test
+cd connecthub-automation && mvn test -DsuiteXmlFile=testng-connecthub-api.xml
 docker compose config && docker compose build
 ```
 
-CI (`.github/workflows/ci.yml`) runs backend-test-build, frontend-test-build, e2e-compile, docker-build.
+CI (`.github/workflows/ci.yml`) runs backend-test-build, frontend-test-build,
+automation-api-tests (backend jar + Postgres service + TestNG API+DB suite),
+e2e-compile, docker-build.
 
 ## API cheat-sheet
 
