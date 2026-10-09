@@ -49,19 +49,21 @@ function NavigationSidebar({ isCollapsed = false, onToggle }) {
       position: 'relative'
     }}>
       
-      {/* Workspace Switcher Header */}
+      {/* Nexus Brand Header (click to collapse / expand sidebar) */}
       <div style={{ position: 'relative', marginBottom: '24px' }}>
         <div
           className="neu-panel"
+          onClick={onToggle}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
             padding: isCollapsed ? '8px 6px' : '8px 12px',
             borderRadius: '14px',
-            justifyContent: isCollapsed ? 'center' : 'flex-start'
+            justifyContent: isCollapsed ? 'center' : 'flex-start',
+            cursor: 'pointer'
           }}
-          title="Nexus"
+          title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
             <div
@@ -238,26 +240,6 @@ function NavigationSidebar({ isCollapsed = false, onToggle }) {
             <span style={{ flex: 1, fontSize: '13px' }}>Help & Support</span>
           )}
         </div>
-
-        {/* Collapse Sidebar Button */}
-        <button
-          className="neu-btn neu-btn-pill"
-          onClick={onToggle}
-          title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-          style={{
-            width: '100%',
-            padding: '8px 0',
-            fontSize: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            marginTop: '4px'
-          }}
-        >
-          <span>{isCollapsed ? '▶' : '◀'}</span>
-          {!isCollapsed && <span>Collapse</span>}
-        </button>
 
       </div>
 
