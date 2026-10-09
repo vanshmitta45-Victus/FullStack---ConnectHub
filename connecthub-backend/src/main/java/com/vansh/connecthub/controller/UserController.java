@@ -279,6 +279,49 @@ public class UserController {
         return ResponseEntity.ok(Map.of("message", "User role updated successfully", "user", user));
     }
 
+    // Update User Profile (email, department, role) - ADMIN or PROJECT_MANAGER only
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody Map<String, String> payload, Authentication authentication) {
+        String actorRole = getActorRole(authentication);
+        if (!canManageUsers(actorRole)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Access Denied: Requires ADMIN or PROJECT_MANAGER role to update users."));
+        }
+
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) return ResponseEntity.notFound().build();
+        User user = optionalUser.get();
+
+        String email = payload.get("email");
+        if (email != null && !email.trim().isEmpty() && !email.trim().equalsIgnoreCase(user.getEmail())) {
+            Optional<User> clash = userRepository.findByEmail(email.trim());
+            if (clash.isPresent() && !clash.get().getId().equals(user.getId())) {
+                return ResponseEntity.badRequest().body(Map.of("error", "A user with this email already exists"));
+            }
+            user.setEmail(email.trim());
+        }
+
+        String department = payload.get("department");
+        if (department != null) {
+            user.setDepartment(department.trim().isEmpty() ? null : department.trim());
+        }
+
+        String role = payload.get("role");
+        if (role != null && !role.trim().isEmpty()) {
+            user.setRole(role.trim().toUpperCase());
+        }
+
+        User saved = userRepository.save(user);
+
+        String actor = getActor(authentication);
+        recordAudit("User @" + actor + " updated profile of @" + user.getUsername(),
+                actor, "USER_UPDATED", "USER", "user-" + user.getId(),
+                null,
+                "{\"username\":\"" + user.getUsername() + "\",\"email\":\"" + user.getEmail() + "\",\"role\":\"" + user.getRole() + "\",\"department\":\"" + user.getDepartment() + "\"}");
+
+        return ResponseEntity.ok(Map.of("message", "User updated successfully", "user", saved));
+    }
+
     // Toggle Account Status (ACTIVE, INVITED, SUSPENDED)
     @PutMapping("/{id}/status")
     public ResponseEntity<?> toggleUserStatus(@PathVariable Long id, @RequestBody Map<String, String> payload, Authentication authentication) {

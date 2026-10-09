@@ -60,6 +60,24 @@ public class ConnectHubTaskUiTest extends BaseTest {
         }
     }
 
+    @Test(description = "User directory shows ACTION column with max 10 rows per page")
+    public void testUserDirectoryPagination() {
+        String base = ConfigReader.get("base.url");
+        String u = "dir_" + UUID.randomUUID().toString().substring(0, 8);
+        String token = new ConnectHubAuthApi().ensureUserToken(u, "Test@1234");
+
+        new ConnectHubLoginPage(driver).loginWithToken(base, u, token, "MEMBER");
+        driver.get(base + "/users");
+        com.sdet.framework.utils.WaitUtils.visible(driver,
+                org.openqa.selenium.By.xpath("//th[contains(.,'ACTION')]"), 10);
+        int rows = driver.findElements(
+                org.openqa.selenium.By.xpath("//tbody/tr")).size();
+        Assert.assertTrue(rows >= 1 && rows <= 10, "expected 1-10 rows, got " + rows);
+        String footer = driver.findElement(
+                org.openqa.selenium.By.xpath("//span[contains(text(),'Showing')]")).getText();
+        Assert.assertTrue(footer.matches("Showing \\d+–\\d+ of \\d+ users"), "bad footer: " + footer);
+    }
+
     @Test(description = "New-DM modal: search member, select, chat opens")
     public void testNewDmModal() {
         String base = ConfigReader.get("base.url");

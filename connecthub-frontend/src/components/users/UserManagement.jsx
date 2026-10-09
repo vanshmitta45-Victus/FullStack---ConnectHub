@@ -122,6 +122,9 @@ function UserManagement() {
   const [searchQuery, setSearchQuery] = useState('');
   const [feedback, setFeedback] = useState({ type: '', message: '' });
   const [confirmState, setConfirmState] = useState(null); // { type: 'status'|'delete', user }
+  const [editUser, setEditUser] = useState(null); // editable copy { id, username, email, department, role }
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 10;
 
   // Slide-over drawer state
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -298,6 +301,33 @@ function UserManagement() {
     return matchesTab && matchesQuery;
   });
 
+  // Pagination (10 users per page, resets when filters change)
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const pagedUsers = filteredUsers.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const pageFrom = filteredUsers.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1;
+  const pageTo = Math.min(safePage * PAGE_SIZE, filteredUsers.length);
+
+  useEffect(() => { setCurrentPage(1); }, [activeTab, searchQuery]);
+
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    if (!editUser) return;
+    try {
+      const res = await axios.put(
+        `/api/users/${editUser.id}`,
+        { email: editUser.email, department: editUser.department, role: editUser.role },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const saved = res.data.user || editUser;
+      setUsers(prev => prev.map(u => u.id === editUser.id ? { ...u, email: saved.email, department: saved.department, role: saved.role } : u));
+      setEditUser(null);
+      showFeedback('success', `User @${editUser.username} updated`);
+    } catch (err) {
+      showFeedback('danger', err.response?.data?.error || 'Failed to update user');
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
       
@@ -446,13 +476,11 @@ function UserManagement() {
                     <th className="neu-subtitle" style={{ padding: '16px 12px' }}>DEPARTMENT / TEAM</th>
                     <th className="neu-subtitle" style={{ padding: '16px 12px' }}>ROLE ASSIGNMENT</th>
                     <th className="neu-subtitle" style={{ padding: '16px 12px' }}>STATUS</th>
-                    {isManagerOrAdmin && (
-                      <th className="neu-subtitle" style={{ padding: '16px 12px', textAlign: 'right' }}>QUICK ACTIONS</th>
-                    )}
+                    <th className="neu-subtitle" style={{ padding: '16px 12px', textAlign: 'right' }}>ACTION</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map(user => {
+                  {pagedUsers.map(user => {
                     const isSelf = user.username === currentUser;
                     return (
                       <tr key={user.id} style={{ borderBottom: '1px solid var(--neu-glass-border)', transition: 'background 0.2s' }}>
@@ -537,36 +565,45 @@ function UserManagement() {
                           </div>
                         </td>
 
-                        {/* Quick Actions (Switch / Suspend / Delete) */}
-                        {isManagerOrAdmin && (
-                          <td style={{ padding: '16px 12px', textAlign: 'right' }}>
-                            <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
-                              
-                              {/* Activation / Deactivation Toggle */}
-                              <button
-                                className={`neu-btn neu-btn-pill ${user.status === 'ACTIVE' ? 'neu-btn-danger' : 'neu-btn-primary'}`}
-                                style={{ padding: '6px 14px', fontSize: '11px', minWidth: '95px' }}
-                                disabled={isSelf}
-                                onClick={() => setConfirmState({ type: 'status', user })}
-                                title={isSelf ? "You cannot suspend your own account" : ""}
-                              >
-                                {user.status === 'ACTIVE' ? 'Suspend' : user.status === 'INVITED' ? 'Activate' : 'Reactivate'}
-                              </button>
+                        {/* Action Column: Update / Suspend / Delete */}
+                        <td style={{ padding: '16px 12px', textAlign: 'right' }}>
+                          <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
 
-                              {/* Delete / Revoke Action (Only ADMIN) */}
-                              {!isSelf && isAdmin && (
-                                <button
-                                  className="neu-btn neu-btn-icon neu-btn-danger"
-                                  style={{ width: '32px', height: '32px', fontSize: '12px' }}
-                                  onClick={() => setConfirmState({ type: 'delete', user })}
-                                  title="Revoke / Delete User (Admin Only)"
-                                >
-                                  ✕
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        )}
+                            {/* Update User */}
+                            <button
+                              className="neu-btn neu-btn-icon"
+                              style={{ width: '32px', height: '32px', fontSize: '13px', opacity: (!isManagerOrAdmin || isSelf) ? 0.45 : 1 }}
+                              disabled={!isManagerOrAdmin || isSelf}
+                              onClick={() => setEditUser({ id: user.id, username: user.username, email: user.email || '', department: user.department || 'Engineering', role: user.role })}
+                              title={isSelf ? 'You cannot edit your own account here' : (!isManagerOrAdmin ? 'Requires ADMIN or PROJECT_MANAGER' : 'Update user')}
+                            >
+                              ✏️
+                            </button>
+
+                            {/* Suspend / Activate Toggle */}
+                            <button
+                              className="neu-btn neu-btn-icon"
+                              style={{ width: '32px', height: '32px', fontSize: '13px', opacity: (!isManagerOrAdmin || isSelf) ? 0.45 : 1 }}
+                              disabled={!isManagerOrAdmin || isSelf}
+                              onClick={() => setConfirmState({ type: 'status', user })}
+                              title={isSelf ? 'You cannot suspend your own account' : (!isManagerOrAdmin ? 'Requires ADMIN or PROJECT_MANAGER' : (user.status === 'ACTIVE' ? 'Suspend user' : 'Activate user'))}
+                            >
+                              {user.status === 'ACTIVE' ? '⏸️' : '▶️'}
+                            </button>
+
+                            {/* Delete / Revoke Action (Only ADMIN) */}
+                            <button
+                              className="neu-btn neu-btn-icon neu-btn-danger"
+                              style={{ width: '32px', height: '32px', fontSize: '12px', opacity: (!isAdmin || isSelf) ? 0.45 : 1 }}
+                              disabled={!isAdmin || isSelf}
+                              onClick={() => setConfirmState({ type: 'delete', user })}
+                              title={isSelf ? 'You cannot delete your own account' : (!isAdmin ? 'Requires ADMIN role' : 'Delete user')}
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+
 
                       </tr>
                     );
@@ -576,6 +613,121 @@ function UserManagement() {
             )}
           </div>
         </>
+      )}
+
+
+      {/* Pagination Footer: 10 users per page */}
+      {filteredUsers.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', flexWrap: 'wrap', gap: '12px' }}>
+          <span style={{ fontSize: '12px', color: 'var(--neu-muted)' }}>
+            Showing {pageFrom}–{pageTo} of {filteredUsers.length} users
+          </span>
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+            <button
+              className="neu-btn neu-btn-pill"
+              style={{ padding: '6px 14px', fontSize: '12px', opacity: safePage === 1 ? 0.45 : 1 }}
+              disabled={safePage === 1}
+              onClick={() => setCurrentPage(safePage - 1)}
+            >
+              ‹ Previous
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(p => p === 1 || p === totalPages || Math.abs(p - safePage) <= 1)
+              .reduce((acc, p, i, arr) => (i > 0 && p - arr[i - 1] > 1 ? [...acc, '…', p] : [...acc, p]), [])
+              .map((p, i) => p === '…' ? (
+                <span key={`gap-${i}`} style={{ fontSize: '12px', color: 'var(--neu-muted)', padding: '0 4px' }}>…</span>
+              ) : (
+                <button
+                  key={p}
+                  className={`neu-btn neu-btn-pill ${p === safePage ? 'neu-btn-primary' : ''}`}
+                  style={{ padding: '6px 12px', fontSize: '12px', minWidth: '34px' }}
+                  onClick={() => setCurrentPage(p)}
+                >
+                  {p}
+                </button>
+              ))}
+            <button
+              className="neu-btn neu-btn-pill"
+              style={{ padding: '6px 14px', fontSize: '12px', opacity: safePage === totalPages ? 0.45 : 1 }}
+              disabled={safePage === totalPages}
+              onClick={() => setCurrentPage(safePage + 1)}
+            >
+              Next ›
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* UPDATE USER MODAL */}
+      {editUser && (
+        <div
+          onClick={() => setEditUser(null)}
+          style={{
+            position: 'fixed', inset: 0, backgroundColor: 'rgba(3, 6, 12, 0.75)',
+            backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+            zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="neu-panel"
+            style={{ width: '460px', maxWidth: '92vw', padding: '32px', borderRadius: '20px' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div>
+                <h2 className="neu-title" style={{ fontSize: '20px' }}>Update user</h2>
+                <p className="neu-subtitle">@{editUser.username}</p>
+              </div>
+              <button className="neu-btn neu-btn-icon" style={{ width: '32px', height: '32px' }} onClick={() => setEditUser(null)}>
+                ✕
+              </button>
+            </div>
+            <form onSubmit={handleUpdateUser} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label className="neu-subtitle" style={{ display: 'block', marginBottom: '6px' }}>EMAIL</label>
+                <input
+                  type="email"
+                  className="neu-input"
+                  placeholder="user@workspace.com"
+                  value={editUser.email}
+                  onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="neu-subtitle" style={{ display: 'block', marginBottom: '6px' }}>DEPARTMENT</label>
+                <select
+                  className="neu-input"
+                  value={editUser.department}
+                  onChange={(e) => setEditUser({ ...editUser, department: e.target.value })}
+                >
+                  {DEPARTMENTS.map(d => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="neu-subtitle" style={{ display: 'block', marginBottom: '6px' }}>ROLE</label>
+                <select
+                  className="neu-input"
+                  value={editUser.role}
+                  onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
+                >
+                  {ROLES.map(r => (
+                    <option key={r.value} value={r.value}>{r.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
+                <button type="button" className="neu-btn neu-btn-pill" style={{ flex: 1, padding: '12px' }} onClick={() => setEditUser(null)}>
+                  Cancel
+                </button>
+                <button type="submit" className="neu-btn neu-btn-pill neu-btn-primary" style={{ flex: 1, padding: '12px' }}>
+                  Save changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       {/* VIEW MODE 2: PERMISSIONS MATRIX (Requirement 11) */}
