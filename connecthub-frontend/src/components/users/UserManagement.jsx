@@ -389,13 +389,6 @@ function UserManagement() {
         </div>
       </div>
 
-      {/* Non-Admin Informational Notice */}
-      {!isManagerOrAdmin && (
-        <div className="neu-panel-inset" style={{ padding: '12px 18px', borderRadius: '12px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12px', color: 'var(--neu-muted)' }}>
-          <span>ℹ️</span>
-          <span>You are viewing User Management as <strong>{userRole}</strong>. Directory viewing is available to all members. Role changes, account suspension, and invitations are restricted to Workspace Administrators and Project Managers.</span>
-        </div>
-      )}
 
       {/* VIEW MODE 1: DIRECTORY & ACCOUNTS */}
       {viewMode === 'DIRECTORY' && (
