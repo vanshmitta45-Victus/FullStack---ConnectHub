@@ -69,16 +69,8 @@ function TopBar({ onToggleSidebar, isCollapsed, onOpenCommandPalette }) {
       borderBottom: '1px solid var(--neu-glass-border)'
     }}>
       
-      {/* Left: Breadcrumbs & Sidebar Toggle */}
+      {/* Left: Breadcrumbs */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <button
-          className="neu-btn neu-btn-icon"
-          onClick={onToggleSidebar}
-          title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-          style={{ width: '38px', height: '38px' }}
-        >
-          {isCollapsed ? '☰' : '⇤'}
-        </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span className="neu-subtitle" style={{ fontSize: '12px' }}>{breadcrumb.section}</span>
