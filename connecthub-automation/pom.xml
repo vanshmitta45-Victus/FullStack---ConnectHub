@@ -7,15 +7,26 @@
     <groupId>com.vansh.connecthub</groupId>
     <artifactId>connecthub-automation</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <name>ConnectHub Automation - Unified SDET Suite (TestNG + JUnit5)</name>
+    <description>Unified UI+API+DB automation for ConnectHub: TestNG/Cucumber/REST Assured framework (com.sdet) plus legacy JUnit5 E2E (com.vansh)</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- TestNG suite to run by default; override with -DsuiteXmlFile=testng-connecthub-api.xml -->
+        <suiteXmlFile>testng-connecthub.xml</suiteXmlFile>
         <selenium.version>4.26.0</selenium.version>
         <junit.version>5.11.3</junit.version>
         <webdrivermanager.version>5.9.2</webdrivermanager.version>
         <assertj.version>3.26.3</assertj.version>
+        <testng.version>7.10.2</testng.version>
+        <cucumber.version>7.18.1</cucumber.version>
+        <restassured.version>5.5.0</restassured.version>
+        <allure.version>2.29.0</allure.version>
+        <jackson.version>2.17.2</jackson.version>
+        <surefire.version>3.5.2</surefire.version>
+        <aspectj.version>1.9.22</aspectj.version>
     </properties>
 
     <dependencies>
@@ -33,7 +44,7 @@
             <version>${webdrivermanager.version}</version>
         </dependency>
 
-        <!-- JUnit 5 Jupiter -->
+        <!-- JUnit 5 Jupiter (legacy E2E) -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -61,6 +72,82 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- TestNG -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Cucumber BDD -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-testng</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- REST Assured for API -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${restassured.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>${restassured.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Allure reporting -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-testng</artifactId>
+            <version>${allure.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-cucumber7-jvm</artifactId>
+            <version>${allure.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- DB validation -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.2.224</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JSON / utils -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.16.1</version>
+        </dependency>
+
         <!-- SLF4J Simple Logger -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -84,7 +171,25 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.2</version>
+                <version>${surefire.version}</version>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
+                    </suiteXmlFiles>
+                    <argLine>-javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"</argLine>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-testng</artifactId>
+                        <version>${surefire.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

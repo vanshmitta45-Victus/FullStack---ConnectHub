@@ -12,13 +12,24 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.sdet.framework.api.ConnectHubAuthApi;
+import com.sdet.framework.api.ConnectHubTaskApi;
+
 public class KanbanDragAndDropE2ETest extends BaseE2ETest {
 
     @Test
     @DisplayName("Verify drag-and-drop mechanics of the Kanban board across columns")
     void testKanbanDragAndDrop() {
+        // Real JWT + guaranteed cards: API setup, UI action
+        String token = new ConnectHubAuthApi().ensureUserToken("qa_engineer", "Password123!");
+        ConnectHubTaskApi tasks = new ConnectHubTaskApi();
+        if (tasks.listTasks(token).jsonPath().getList("$").size() < 2) {
+            tasks.createTask(token, "Drag card A " + System.currentTimeMillis(), "kanban e2e");
+            tasks.createTask(token, "Drag card B " + System.currentTimeMillis(), "kanban e2e");
+        }
+
         // Authenticate test user session
-        loginViaLocalStorage(driver, "qa_engineer", "fake-jwt-token", "ADMIN");
+        loginViaLocalStorage(driver, "qa_engineer", token, "ADMIN");
         driver.get(BASE_URL + "/tasks");
 
         // Wait for Kanban board view to load

@@ -11,7 +11,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password123
     ports:
-      - "5432:5432"
+      - "5434:5432" # host 5432 is taken by local Postgres service, use 5434
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./connecthub-db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro

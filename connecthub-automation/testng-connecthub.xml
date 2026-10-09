@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="ConnectHub Suite" parallel="tests" thread-count="2">
+    <listeners>
+        <listener class-name="com.sdet.framework.listeners.TestListener"/>
+    </listeners>
+    <test name="ConnectHub API+DB (no browser)">
+        <classes>
+            <class name="com.sdet.framework.tests.ConnectHubAuthApiTest"/>
+            <class name="com.sdet.framework.tests.ConnectHubTaskApiTest"/>
+            <class name="com.sdet.framework.tests.ConnectHubTaskE2ETest"/>
+        </classes>
+    </test>
+    <test name="ConnectHub UI (needs frontend on :5173)">
+        <classes>
+            <class name="com.sdet.framework.tests.ConnectHubTaskUiTest"/>
+            <class name="com.sdet.framework.runners.ConnectHubCucumberRunner"/>
+        </classes>
+    </test>
+</suite>
