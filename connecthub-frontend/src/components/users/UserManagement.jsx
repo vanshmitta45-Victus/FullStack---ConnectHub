@@ -135,6 +135,8 @@ function UserManagement() {
   const [inviteForm, setInviteForm] = useState({
     username: '',
     email: '',
+    phone: '',
+    gender: '',
     role: 'MEMBER',
     department: 'Engineering',
     autoPassword: true,
@@ -251,6 +253,8 @@ function UserManagement() {
       const payload = {
         username: inviteForm.username.trim(),
         email: inviteForm.email.trim(),
+        phone: inviteForm.phone.trim(),
+        gender: inviteForm.gender,
         role: inviteForm.role,
         department: inviteForm.department,
         password: inviteForm.autoPassword ? '' : inviteForm.customPassword
@@ -274,6 +278,8 @@ function UserManagement() {
       setInviteForm({
         username: '',
         email: '',
+        phone: '',
+        gender: '',
         role: 'MEMBER',
         department: 'Engineering',
         autoPassword: true,
@@ -320,11 +326,11 @@ function UserManagement() {
     try {
       const res = await axios.put(
         `/api/users/${editUser.id}`,
-        { email: editUser.email, department: editUser.department, role: editUser.role },
+        { email: editUser.email, phone: editUser.phone, gender: editUser.gender, department: editUser.department, role: editUser.role },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const saved = res.data.user || editUser;
-      setUsers(prev => prev.map(u => u.id === editUser.id ? { ...u, email: saved.email, department: saved.department, role: saved.role } : u));
+      setUsers(prev => prev.map(u => u.id === editUser.id ? { ...u, email: saved.email, phone: saved.phone, gender: saved.gender, department: saved.department, role: saved.role } : u));
       setEditUser(null);
       showFeedback('success', `User @${editUser.username} updated`);
     } catch (err) {
@@ -387,7 +393,7 @@ function UserManagement() {
               }}
             >
               <span>+</span>
-              <span>Invite New User</span>
+              <span>Create User</span>
             </button>
           )}
         </div>
@@ -566,7 +572,7 @@ function UserManagement() {
                               className="neu-btn neu-btn-icon"
                               style={{ width: '32px', height: '32px', fontSize: '13px', opacity: (!isManagerOrAdmin || isSelf) ? 0.45 : 1 }}
                               disabled={!isManagerOrAdmin || isSelf}
-                              onClick={() => setEditUser({ id: user.id, username: user.username, email: user.email || '', department: user.department || 'Engineering', role: user.role })}
+                              onClick={() => setEditUser({ id: user.id, username: user.username, email: user.email || '', phone: user.phone || '', gender: user.gender || '', department: user.department || 'Engineering', role: user.role, status: user.status, createdAt: user.createdAt })}
                               title={isSelf ? 'You cannot edit your own account here' : (!isManagerOrAdmin ? 'Requires ADMIN or PROJECT_MANAGER' : 'Update user')}
                             >
                               ✏️
@@ -675,8 +681,18 @@ function UserManagement() {
               </button>
             </div>
             <form onSubmit={handleUpdateUser} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label className="neu-subtitle" style={{ display: 'block', marginBottom: '6px' }}>USER ID</label>
+                  <input type="text" className="neu-input" value={editUser.id} disabled style={{ opacity: 0.6 }} />
+                </div>
+                <div>
+                  <label className="neu-subtitle" style={{ display: 'block', marginBottom: '6px' }}>USERNAME</label>
+                  <input type="text" className="neu-input" value={editUser.username} disabled style={{ opacity: 0.6 }} />
+                </div>
+              </div>
               <div>
-                <label className="neu-subtitle" style={{ display: 'block', marginBottom: '6px' }}>EMAIL</label>
+                <label className="neu-subtitle" style={{ display: 'block', marginBottom: '6px' }}>EMAIL ADDRESS</label>
                 <input
                   type="email"
                   className="neu-input"
@@ -684,6 +700,31 @@ function UserManagement() {
                   value={editUser.email}
                   onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
                 />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label className="neu-subtitle" style={{ display: 'block', marginBottom: '6px' }}>PHONE NUMBER</label>
+                  <input
+                    type="tel"
+                    className="neu-input"
+                    placeholder="e.g. 9876543210"
+                    value={editUser.phone}
+                    onChange={(e) => setEditUser({ ...editUser, phone: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="neu-subtitle" style={{ display: 'block', marginBottom: '6px' }}>GENDER</label>
+                  <select
+                    className="neu-input"
+                    value={editUser.gender}
+                    onChange={(e) => setEditUser({ ...editUser, gender: e.target.value })}
+                  >
+                    <option value="">Select...</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
               </div>
               <div>
                 <label className="neu-subtitle" style={{ display: 'block', marginBottom: '6px' }}>DEPARTMENT</label>
@@ -708,6 +749,18 @@ function UserManagement() {
                     <option key={r.value} value={r.value}>{r.label}</option>
                   ))}
                 </select>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label className="neu-subtitle" style={{ display: 'block', marginBottom: '6px' }}>STATUS</label>
+                  <div className="neu-input" style={{ opacity: 0.7 }}>{editUser.status || 'ACTIVE'}</div>
+                </div>
+                <div>
+                  <label className="neu-subtitle" style={{ display: 'block', marginBottom: '6px' }}>MEMBER SINCE</label>
+                  <div className="neu-input" style={{ opacity: 0.7 }}>
+                    {editUser.createdAt ? String(editUser.createdAt).slice(0, 10) : '—'}
+                  </div>
+                </div>
               </div>
               <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
                 <button type="button" className="neu-btn neu-btn-pill" style={{ flex: 1, padding: '12px' }} onClick={() => setEditUser(null)}>
@@ -844,8 +897,8 @@ function UserManagement() {
             {/* Drawer Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px' }}>
               <div>
-                <h2 className="neu-title" style={{ fontSize: '22px', marginBottom: '4px' }}>Invite New Member</h2>
-                <p className="neu-subtitle">Provision access, assign roles, and dispatch credentials.</p>
+                <h2 className="neu-title" style={{ fontSize: '22px', marginBottom: '4px' }}>Create User</h2>
+                <p className="neu-subtitle">Username, password, contact details and role in one step.</p>
               </div>
               <button
                 className="neu-btn neu-btn-icon"
@@ -937,6 +990,38 @@ function UserManagement() {
                   />
                 </div>
 
+                {/* Phone */}
+                <div>
+                  <label className="neu-subtitle" style={{ display: 'block', marginBottom: '8px' }}>
+                    PHONE NUMBER
+                  </label>
+                  <input
+                    type="tel"
+                    className="neu-input"
+                    placeholder="e.g. 9876543210"
+                    value={inviteForm.phone}
+                    onChange={(e) => setInviteForm({ ...inviteForm, phone: e.target.value })}
+                  />
+                </div>
+
+                {/* Gender */}
+                <div>
+                  <label className="neu-subtitle" style={{ display: 'block', marginBottom: '8px' }}>
+                    GENDER
+                  </label>
+                  <select
+                    className="neu-input"
+                    value={inviteForm.gender}
+                    onChange={(e) => setInviteForm({ ...inviteForm, gender: e.target.value })}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <option value="">Select...</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
                 {/* Role Selection */}
                 <div>
                   <label className="neu-subtitle" style={{ display: 'block', marginBottom: '8px' }}>
@@ -1010,7 +1095,7 @@ function UserManagement() {
                     style={{ width: '100%', padding: '14px', fontSize: '14px' }}
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? 'Dispatching Invitation...' : 'Send Workspace Invitation'}
+                    {isSubmitting ? 'Creating User...' : 'Create User'}
                   </button>
                 </div>
 

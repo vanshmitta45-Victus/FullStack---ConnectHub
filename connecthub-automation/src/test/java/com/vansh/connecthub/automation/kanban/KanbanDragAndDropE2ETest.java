@@ -32,8 +32,9 @@ public class KanbanDragAndDropE2ETest extends BaseE2ETest {
         loginViaLocalStorage(driver, "qa_engineer", token, "ADMIN");
         driver.get(BASE_URL + "/tasks");
 
-        // Wait for Kanban board view to load
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("h1")));
+        // Wait for Kanban board view to load (Create Issue action marks a loaded board)
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//button[contains(.,'Create Issue')]")));
 
         // Locate columns
         List<WebElement> columns = driver.findElements(By.cssSelector(".kanban-col, div[style*='flex-direction: column']"));

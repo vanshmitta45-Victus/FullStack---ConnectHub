@@ -229,6 +229,10 @@ public class UserController {
             user.setRole(role);
             user.setStatus("INVITED");
             user.setDepartment(department != null && !department.trim().isEmpty() ? department.trim() : null);
+            String phone = payload.get("phone");
+            if (phone != null && !phone.trim().isEmpty()) user.setPhone(phone.trim());
+            String gender = payload.get("gender");
+            if (gender != null && !gender.trim().isEmpty()) user.setGender(gender.trim());
 
             User saved = userRepository.save(user);
 
@@ -304,6 +308,16 @@ public class UserController {
         String department = payload.get("department");
         if (department != null) {
             user.setDepartment(department.trim().isEmpty() ? null : department.trim());
+        }
+
+        String phone = payload.get("phone");
+        if (phone != null) {
+            user.setPhone(phone.trim().isEmpty() ? null : phone.trim());
+        }
+
+        String gender = payload.get("gender");
+        if (gender != null) {
+            user.setGender(gender.trim().isEmpty() ? null : gender.trim());
         }
 
         String role = payload.get("role");
