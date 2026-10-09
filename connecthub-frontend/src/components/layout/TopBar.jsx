@@ -43,7 +43,7 @@ function TopBar({ onToggleSidebar, isCollapsed, onOpenCommandPalette }) {
     if (p.startsWith('/tasks')) return { section: 'Operations', current: 'Task Board' };
     if (p.startsWith('/projects')) return { section: 'Strategy', current: 'Projects & Delivery' };
     if (p.startsWith('/teams')) return { section: 'Organization', current: 'Teams & Rosters' };
-    if (p.startsWith('/users')) return { section: 'Administration', current: 'User Directory' };
+    if (p.startsWith('/users')) return { section: '', current: 'User Management' };
     if (p.startsWith('/audit')) return { section: 'Compliance', current: 'Audit History' };
     if (p.startsWith('/chat')) return { section: '', current: 'Connect' };
     if (p.startsWith('/profile')) return { section: 'Account', current: 'Settings & Profile' };

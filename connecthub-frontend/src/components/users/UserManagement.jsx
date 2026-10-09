@@ -352,12 +352,7 @@ function UserManagement() {
       )}
 
       {/* Header Section */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
-        <div>
-          <h1 className="neu-title" style={{ fontSize: '28px', marginBottom: '6px' }}>User Management</h1>
-          <p className="neu-subtitle">Workspace identity, role escalation, account lifecycle, and RBAC security matrix.</p>
-        </div>
-
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '24px' }}>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           {/* View Mode Segmented Switch: Directory vs Permissions Matrix */}
           <div className="neu-panel-inset" style={{ display: 'flex', padding: '4px', borderRadius: '24px' }}>
