@@ -6,6 +6,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    // Allow Selenium Grid browsers (host.docker.internal) in E2E runs
+    allowedHosts: ['host.docker.internal'],
     proxy: {
       '/api': {
         target: 'http://localhost:8080',

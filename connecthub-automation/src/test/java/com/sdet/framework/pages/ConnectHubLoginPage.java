@@ -36,13 +36,17 @@ public class ConnectHubLoginPage {
     }
 
     public boolean isLoggedIn() {
-        try {
-            // ProtectedRoute redirects to /dashboard; token in localStorage proves login
-            Thread.sleep(1500);
-            String url = driver.getCurrentUrl();
-            Object token = ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('token');");
-            return url.contains("/dashboard") && token != null && !token.toString().isEmpty();
-        } catch (Exception e) { return false; }
+        // Poll: remote/Grid browsers need longer than local for login round-trip
+        long end = System.currentTimeMillis() + 10000;
+        while (System.currentTimeMillis() < end) {
+            try {
+                String url = driver.getCurrentUrl();
+                Object token = ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('token');");
+                if (url.contains("/dashboard") && token != null && !token.toString().isEmpty()) return true;
+                Thread.sleep(500);
+            } catch (Exception ignored) {}
+        }
+        return false;
     }
 
     /** Fast path used by E2E: skip form, inject JWT from API. */

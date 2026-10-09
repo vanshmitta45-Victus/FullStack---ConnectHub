@@ -34,15 +34,20 @@ public class DriverFactory {
                 if (browser.equalsIgnoreCase("firefox")) {
                     FirefoxOptions o = new FirefoxOptions();
                     if (headless) o.addArguments("-headless");
+                    o.addArguments("--width=1920", "--height=1080");
                     RemoteWebDriver rd = new RemoteWebDriver(hub, o);
                     rd.manage().timeouts().implicitlyWait(Duration.ofSeconds(timeout));
+                    setViewport(rd);
                     return rd;
                 }
                 ChromeOptions o = new ChromeOptions();
                 if (headless) o.addArguments("--headless=new");
                 o.addArguments("--no-sandbox", "--disable-dev-shm-usage");
+                o.addArguments("--window-size=1920,1080");
+                o.addArguments("--disable-features=AsyncDns");
                 RemoteWebDriver rd = new RemoteWebDriver(hub, o);
                 rd.manage().timeouts().implicitlyWait(Duration.ofSeconds(timeout));
+                setViewport(rd);
                 return rd;
             }
             if (browser.equalsIgnoreCase("firefox")) {
@@ -61,6 +66,9 @@ public class DriverFactory {
             // Headless viewport defaults to ~800x600, hiding below-fold content from
             // visibility checks (ConnectHub Kanban cards render below y=439). Force desktop size.
             o.addArguments("--window-size=1920,1080");
+            // Grid containers: force the system resolver so container /etc/hosts
+            // (host.docker.internal) is honoured instead of Secure DNS.
+            o.addArguments("--disable-features=AsyncDns");
             ChromeDriver cd = new ChromeDriver(o);
             cd.manage().timeouts().implicitlyWait(Duration.ofSeconds(timeout));
             setViewport(cd);

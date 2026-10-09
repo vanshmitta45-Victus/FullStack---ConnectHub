@@ -24,6 +24,8 @@ public class ConfigReader {
     }
 
     public static String get(String key, String def) {
+        String sys = System.getProperty(key);
+        if (sys != null && !sys.isEmpty()) return sys;
         return props.getProperty(key, def);
     }
 }

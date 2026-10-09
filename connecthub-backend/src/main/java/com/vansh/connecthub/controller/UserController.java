@@ -15,7 +15,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost", "http://localhost:80"})
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost", "http://localhost:80", "http://host.docker.internal:5173", "http://host.docker.internal"})
 public class UserController {
 
     @Autowired

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost", "http://localhost:80"})
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost", "http://localhost:80", "http://host.docker.internal:5173", "http://host.docker.internal"})
 public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
