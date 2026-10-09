@@ -9,15 +9,8 @@ function NavigationSidebar({ isCollapsed = false, onToggle }) {
   const isAdminOrLead = ['ADMIN', 'PROJECT_MANAGER', 'TEAM_LEAD'].includes(userRole);
   const isAdmin = ['ADMIN', 'PROJECT_MANAGER'].includes(userRole);
 
-  const [activeWorkspace, setActiveWorkspace] = useState('Nexus Workspace');
-  const [showWorkspaceMenu, setShowWorkspaceMenu] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
 
-  const workspaces = [
-    { name: 'Nexus Workspace', plan: 'Enterprise', icon: '🚀' },
-    { name: 'ConnectHub Dev Lab', plan: 'Internal', icon: '⚡' },
-    { name: 'Client Delivery Pod', plan: 'Pro', icon: '💼' }
-  ];
 
   // Core Product Areas matching Specification Information Architecture
   const mainNavItems = [
@@ -60,17 +53,15 @@ function NavigationSidebar({ isCollapsed = false, onToggle }) {
       <div style={{ position: 'relative', marginBottom: '24px' }}>
         <div
           className="neu-panel"
-          onClick={() => !isCollapsed && setShowWorkspaceMenu(!showWorkspaceMenu)}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
             padding: isCollapsed ? '8px 6px' : '8px 12px',
             borderRadius: '14px',
-            cursor: isCollapsed ? 'default' : 'pointer',
-            justifyContent: isCollapsed ? 'center' : 'space-between'
+            justifyContent: isCollapsed ? 'center' : 'flex-start'
           }}
-          title={isCollapsed ? activeWorkspace : 'Switch Workspace'}
+          title="Nexus Workspace"
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
             <div
@@ -88,7 +79,7 @@ function NavigationSidebar({ isCollapsed = false, onToggle }) {
             {!isCollapsed && (
               <div style={{ overflow: 'hidden' }}>
                 <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--neu-text)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                  {activeWorkspace}
+                  Nexus Workspace
                 </div>
                 <div style={{ fontSize: '10px', color: 'var(--neu-accent)', fontWeight: 'bold', letterSpacing: '0.5px' }}>
                   ENTERPRISE SAAS
@@ -96,51 +87,7 @@ function NavigationSidebar({ isCollapsed = false, onToggle }) {
               </div>
             )}
           </div>
-
-          {!isCollapsed && (
-            <span style={{ fontSize: '10px', opacity: 0.5, flexShrink: 0 }}>▼</span>
-          )}
         </div>
-
-        {/* Workspace Switcher Dropdown */}
-        {showWorkspaceMenu && !isCollapsed && (
-          <div
-            className="neu-panel"
-            style={{
-              position: 'absolute',
-              top: '52px',
-              left: 0,
-              width: '240px',
-              zIndex: 120,
-              padding: '10px',
-              borderRadius: '14px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px'
-            }}
-          >
-            <div style={{ fontSize: '10px', color: 'var(--neu-muted)', padding: '4px 8px', letterSpacing: '0.5px' }}>
-              WORKSPACES
-            </div>
-            {workspaces.map((ws, idx) => (
-              <div
-                key={idx}
-                className={`neu-nav-item ${activeWorkspace === ws.name ? 'active' : ''}`}
-                style={{ padding: '8px 10px', fontSize: '12px', display: 'flex', justifyContent: 'space-between' }}
-                onClick={() => {
-                  setActiveWorkspace(ws.name);
-                  setShowWorkspaceMenu(false);
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span>{ws.icon}</span>
-                  <span>{ws.name}</span>
-                </div>
-                <span style={{ fontSize: '9px', opacity: 0.7 }}>{ws.plan}</span>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Navigation Sections */}
