@@ -38,8 +38,19 @@ public class ChatController {
 
     // --- WEBSOCKET MESSAGING ENDPOINTS ---
 
+    // Only CHAT/FILE payloads are persisted. Ephemeral signals (TYPING, READ, ...)
+    // are broadcast without being stored, otherwise keystroke signals pollute history.
+    private boolean isPersistent(ChatMessage chatMessage) {
+        String t = chatMessage.getType();
+        return t == null || "CHAT".equalsIgnoreCase(t) || "FILE".equalsIgnoreCase(t);
+    }
+
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(@Payload ChatMessage chatMessage) {
+        if (!isPersistent(chatMessage)) {
+            handleTyping(chatMessage);
+            return;
+        }
         chatMessage.setRecipient("Global");
         ChatMessage saved = chatMessageRepository.save(chatMessage);
         messagingTemplate.convertAndSend("/topic/public", saved);
@@ -47,6 +58,11 @@ public class ChatController {
 
     @MessageMapping("/chat.sendPrivateMessage")
     public void sendPrivateMessage(@Payload ChatMessage chatMessage) {
+        if (!isPersistent(chatMessage)) {
+            messagingTemplate.convertAndSend("/topic/user." + chatMessage.getRecipient(), chatMessage);
+            messagingTemplate.convertAndSend("/topic/user." + chatMessage.getSender(), chatMessage);
+            return;
+        }
         ChatMessage saved = chatMessageRepository.save(chatMessage);
         messagingTemplate.convertAndSend("/topic/user." + chatMessage.getRecipient(), saved);
         messagingTemplate.convertAndSend("/topic/user." + chatMessage.getSender(), saved);
@@ -54,6 +70,10 @@ public class ChatController {
 
     @MessageMapping("/chat.sendGroupMessage")
     public void sendGroupMessage(@Payload ChatMessage chatMessage) {
+        if (!isPersistent(chatMessage)) {
+            messagingTemplate.convertAndSend("/topic/group." + chatMessage.getRecipient(), chatMessage);
+            return;
+        }
         ChatMessage saved = chatMessageRepository.save(chatMessage);
         messagingTemplate.convertAndSend("/topic/group." + chatMessage.getRecipient(), saved);
     }
@@ -223,6 +243,34 @@ public class ChatController {
         result.put("hasMore", messagePage.hasNext());
 
         return ResponseEntity.ok(result);
+    }
+
+    // --- DM CONVERSATION LIST: distinct partners the user exchanged DMs with ---
+    // Only pair-scoped messages feed this list, so A messaging B is visible to A and B alone.
+    @GetMapping("/api/chat/conversations")
+    public ResponseEntity<List<Map<String, Object>>> getConversations(Authentication authentication) {
+        String me = authentication != null ? authentication.getName() : "";
+        List<ChatMessage> feed = chatMessageRepository.findConversationMessages(me);
+
+        Map<String, Map<String, Object>> byPartner = new LinkedHashMap<>();
+        for (ChatMessage m : feed) {
+            String partner = me.equals(m.getSender()) ? m.getRecipient() : m.getSender();
+            if (partner == null || partner.equalsIgnoreCase(me)) continue;
+            byPartner.computeIfAbsent(partner, k -> {
+                Map<String, Object> c = new LinkedHashMap<>();
+                c.put("username", k);
+                c.put("lastMessage", m.getContent());
+                c.put("timestamp", m.getTimestamp());
+                c.put("lastMessageId", m.getId());
+                c.put("unreadCount", 0);
+                return c;
+            });
+            if (!me.equals(m.getSender()) && !Boolean.TRUE.equals(m.getIsRead())) {
+                Map<String, Object> c = byPartner.get(partner);
+                c.put("unreadCount", (Integer) c.get("unreadCount") + 1);
+            }
+        }
+        return ResponseEntity.ok(new ArrayList<>(byPartner.values()));
     }
 
     // --- CONNECTION RESILIENCE: RECOVERY OF MISSED MESSAGES ---

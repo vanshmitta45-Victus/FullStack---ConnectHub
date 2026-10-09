@@ -5,6 +5,7 @@
             <class name="com.sdet.framework.tests.ConnectHubAuthApiTest"/>
             <class name="com.sdet.framework.tests.ConnectHubTaskApiTest"/>
             <class name="com.sdet.framework.tests.ConnectHubTaskE2ETest"/>
+            <class name="com.sdet.framework.tests.ConnectHubChatApiTest"/>
         </classes>
     </test>
 </suite>

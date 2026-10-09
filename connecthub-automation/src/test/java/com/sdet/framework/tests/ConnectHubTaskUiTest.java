@@ -59,4 +59,28 @@ public class ConnectHubTaskUiTest extends BaseTest {
             api.deleteTask(token, id);
         }
     }
+
+    @Test(description = "New-DM modal: search member, select, chat opens")
+    public void testNewDmModal() {
+        String base = ConfigReader.get("base.url");
+        String u = "modal_" + UUID.randomUUID().toString().substring(0, 8);
+        String token = new ConnectHubAuthApi().ensureUserToken(u, "Test@1234");
+
+        new ConnectHubLoginPage(driver).loginWithToken(base, u, token, "MEMBER");
+        driver.get(base + "/chat");
+
+        // open the modal via the + button in the DIRECT MESSAGES header
+        com.sdet.framework.utils.WaitUtils.visible(driver,
+                org.openqa.selenium.By.xpath("//button[@title='New direct message']"), 10).click();
+        com.sdet.framework.utils.WaitUtils.visible(driver,
+                org.openqa.selenium.By.xpath("//input[contains(@placeholder,'Type a name')]"), 10)
+                .sendKeys("demo_user");
+        // select the member -> DM view opens on that user
+        com.sdet.framework.utils.WaitUtils.visible(driver,
+                org.openqa.selenium.By.xpath("//div[contains(@class,'neu-nav-item') and contains(.,'demo_user')]"), 10)
+                .click();
+        org.openqa.selenium.WebElement header = com.sdet.framework.utils.WaitUtils.visible(driver,
+                org.openqa.selenium.By.xpath("//h2[contains(.,'demo_user')]"), 10);
+        Assert.assertTrue(header.isDisplayed());
+    }
 }

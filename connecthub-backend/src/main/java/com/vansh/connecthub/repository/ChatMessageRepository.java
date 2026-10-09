@@ -40,6 +40,14 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     @Query("SELECT m FROM ChatMessage m WHERE ((m.sender = :user1 AND m.recipient = :user2) OR (m.sender = :user2 AND m.recipient = :user1)) AND m.parentMessageId IS NULL ORDER BY m.id DESC")
     Page<ChatMessage> findMainPrivateMessagesPaged(@Param("user1") String user1, @Param("user2") String user2, Pageable pageable);
 
+    // 3c. Conversation feed: every non-thread message involving a user (DMs sent or received),
+    // excluding Global and group channels, newest first. Used to build the DM conversation list.
+    @Query("SELECT m FROM ChatMessage m WHERE (m.sender = :user OR m.recipient = :user) " +
+           "AND m.recipient <> 'Global' AND m.parentMessageId IS NULL " +
+           "AND NOT EXISTS (SELECT g FROM ChatGroup g WHERE g.name = m.recipient) " +
+           "ORDER BY m.id DESC")
+    List<ChatMessage> findConversationMessages(@Param("user") String user);
+
     // 4. Fetch all thread replies belonging to a specific parent message
     List<ChatMessage> findByParentMessageIdOrderByIdAsc(Long parentMessageId);
 

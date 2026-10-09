@@ -15,6 +15,9 @@ function Chat() {
   const [showRightPanel, setShowRightPanel] = useState(false);
   const [rightPanelTab, setRightPanelTab] = useState('About');
   const [showGroupModal, setShowGroupModal] = useState(false);
+  const [conversations, setConversations] = useState([]);
+  const [showNewDmModal, setShowNewDmModal] = useState(false);
+  const [dmSearch, setDmSearch] = useState('');
   const [newGroupName, setNewGroupName] = useState('');
   const [newGroupDesc, setNewGroupDesc] = useState('');
   const [groups, setGroups] = useState([
@@ -172,6 +175,18 @@ function Chat() {
     }
   };
 
+  // DM conversation partners: only people this user exchanged DMs with (never the full directory)
+  const fetchConversations = async () => {
+    try {
+      const res = await axios.get('/api/chat/conversations', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setConversations(res.data);
+    } catch (err) {
+      console.error('Failed to fetch conversations:', err);
+    }
+  };
+
   const fetchReactionsForMessages = async (messageList) => {
     const ids = messageList.map((m) => m.id).filter(Boolean);
     if (ids.length === 0) return;
@@ -281,6 +296,7 @@ function Chat() {
   useEffect(() => {
     fetchDirectory();
     fetchMyGroups();
+    fetchConversations();
 
     websocketService.connect(currentUser, (incomingMsg) => {
       if (incomingMsg.type === 'REACTION_UPDATE') {
@@ -320,6 +336,7 @@ function Chat() {
           (incomingMsg.sender === currentUser && incomingMsg.recipient === selectedRecipientRef.current));
 
       if (isGroupMatch || isDirectMatch) {
+        if (isDirectMatch) fetchConversations();
         if (incomingMsg.parentMessageId) {
           setThreadCounts((prev) => ({
             ...prev,
@@ -371,7 +388,7 @@ function Chat() {
         setHasMoreMessages(response.data.hasMore);
         fetchReactionsForMessages(initialMsgs);
         fetchThreadCounts(initialMsgs);
-        markDirectMessagesAsRead();
+        markDirectMessagesAsRead().then(() => fetchConversations());
       } catch (err) {
         console.error('History retrieval failed:', err);
       }
@@ -489,9 +506,7 @@ function Chat() {
       content: 'typing...'
     };
 
-    if (selectedRecipient === 'Global') websocketService.sendMessage(typingPayload);
-    else if (isGroup) websocketService.sendGroupMessage(typingPayload);
-    else websocketService.sendPrivateMessage(typingPayload);
+    websocketService.sendTypingEvent(typingPayload);
 
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(() => {
@@ -501,9 +516,7 @@ function Chat() {
         type: 'TYPING',
         content: 'stopped'
       };
-      if (selectedRecipient === 'Global') websocketService.sendMessage(stopPayload);
-      else if (isGroup) websocketService.sendGroupMessage(stopPayload);
-      else websocketService.sendPrivateMessage(stopPayload);
+      websocketService.sendTypingEvent(stopPayload);
     }, 1500);
   };
 
@@ -562,6 +575,7 @@ function Chat() {
 
     setInputMessage('');
     setMentionQuery(null);
+    fetchConversations();
   };
 
   const handleSendThreadReply = (e) => {
@@ -760,13 +774,39 @@ function Chat() {
             </div>
 
             <div>
-              <div style={{ padding: '0 24px', marginBottom: '10px' }}>
+              <div style={{ padding: '0 24px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span className="neu-subtitle">DIRECT MESSAGES</span>
+                <button
+                  className="neu-btn neu-btn-icon"
+                  style={{ width: '24px', height: '24px', fontSize: '12px' }}
+                  title="New direct message"
+                  onClick={() => { setDmSearch(''); setShowNewDmModal(true); }}
+                >
+                  +
+                </button>
               </div>
               <div>
-                {users.map((u) => (
-                  <div key={u.id} className={`neu-nav-item ${selectedRecipient === u.username ? 'active' : ''}`} onClick={() => selectChat(u.username, false)}>
-                    <div className="neu-status-dot"></div> {u.username}
+                {conversations.length === 0 && (
+                  <div style={{ padding: '4px 24px', fontSize: '12px', color: 'var(--neu-muted)' }}>
+                    No conversations yet — start one with +
+                  </div>
+                )}
+                {conversations.map((c) => (
+                  <div key={c.username} className={`neu-nav-item ${selectedRecipient === c.username ? 'active' : ''}`} onClick={() => selectChat(c.username, false)}>
+                    <div className="neu-status-dot"></div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '13px', fontWeight: 600 }}>{c.username}</div>
+                      {c.lastMessage && (
+                        <div style={{ fontSize: '11px', color: 'var(--neu-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {c.lastMessage}
+                        </div>
+                      )}
+                    </div>
+                    {c.unreadCount > 0 && (
+                      <span style={{ fontSize: '10px', fontWeight: 'bold', background: 'var(--neu-accent)', color: '#fff', padding: '1px 7px', borderRadius: '10px' }}>
+                        {c.unreadCount}
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1245,6 +1285,69 @@ function Chat() {
                 Create Channel
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* NEW DIRECT MESSAGE MODAL (search workspace members) */}
+      {showNewDmModal && (
+        <div
+          onClick={() => setShowNewDmModal(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(3, 6, 12, 0.75)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            zIndex: 1100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="neu-panel"
+            style={{ width: '440px', maxWidth: '92vw', padding: '28px', borderRadius: '20px' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h2 className="neu-title" style={{ fontSize: '18px' }}>New message</h2>
+              <button
+                className="neu-btn neu-btn-icon"
+                style={{ width: '32px', height: '32px' }}
+                onClick={() => setShowNewDmModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <input
+              autoFocus
+              type="text"
+              className="neu-input"
+              placeholder="Type a name..."
+              value={dmSearch}
+              onChange={(e) => setDmSearch(e.target.value)}
+              style={{ marginBottom: '12px' }}
+            />
+            <div style={{ maxHeight: '320px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {users
+                .filter((u) => u.username.toLowerCase().includes(dmSearch.trim().toLowerCase()))
+                .map((u) => (
+                  <div
+                    key={u.id}
+                    className="neu-nav-item"
+                    onClick={() => { selectChat(u.username, false); setShowNewDmModal(false); }}
+                  >
+                    <div className="neu-avatar neu-avatar-sm">{u.username.charAt(0).toUpperCase()}</div>
+                    <span style={{ fontSize: '13px', fontWeight: 600 }}>@{u.username}</span>
+                  </div>
+                ))}
+              {users.filter((u) => u.username.toLowerCase().includes(dmSearch.trim().toLowerCase())).length === 0 && (
+                <div style={{ fontSize: '12px', color: 'var(--neu-muted)', textAlign: 'center', padding: '12px' }}>
+                  No members match “{dmSearch}”
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
