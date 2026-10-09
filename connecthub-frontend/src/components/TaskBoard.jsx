@@ -331,19 +331,7 @@ function TaskBoard() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
       
       {/* Top Header & Quick Actions */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h1 className="neu-title" style={{ fontSize: '26px' }}>Project Kanban</h1>
-            <span className="tag-pill" style={{ background: 'var(--neu-accent)', color: '#fff', fontWeight: 'bold' }}>
-              Sprint 4 Active
-            </span>
-          </div>
-          <p className="neu-subtitle" style={{ marginTop: '4px' }}>
-            Interactive Jira-style delivery board with drag-and-drop workflow and issue inspection.
-          </p>
-        </div>
-
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '20px' }}>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           {/* View Mode Toggle */}
           <div className="neu-panel-inset" style={{ padding: '3px', borderRadius: '20px', display: 'flex' }}>

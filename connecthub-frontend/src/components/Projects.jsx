@@ -157,12 +157,7 @@ function Projects() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: '24px' }}>
       
       {/* Header & View Switcher */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div>
-          <h1 className="neu-title" style={{ fontSize: '28px', marginBottom: '4px' }}>Projects & Delivery</h1>
-          <p className="neu-subtitle">Strategic initiatives, interactive roadmaps, milestones, and linked assets.</p>
-        </div>
-
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           {/* View Mode Segmented Switch: Directory / Roadmap / Milestones */}
           <div className="neu-panel-inset" style={{ display: 'flex', padding: '4px', borderRadius: '24px' }}>

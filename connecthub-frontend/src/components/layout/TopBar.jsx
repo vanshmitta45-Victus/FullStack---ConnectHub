@@ -38,11 +38,11 @@ function TopBar({ onToggleSidebar, isCollapsed, onOpenCommandPalette }) {
   // Derive breadcrumb from current path
   const getBreadcrumb = () => {
     const p = location.pathname;
-    if (p.startsWith('/dashboard')) return { section: 'Overview', current: 'Workspace Dashboard' };
-    if (p.startsWith('/my-work')) return { section: 'Personal', current: 'My Work' };
-    if (p.startsWith('/tasks')) return { section: 'Operations', current: 'Task Board' };
-    if (p.startsWith('/projects')) return { section: 'Strategy', current: 'Projects & Delivery' };
-    if (p.startsWith('/teams')) return { section: 'Organization', current: 'Teams & Rosters' };
+    if (p.startsWith('/dashboard')) return { section: '', current: 'Dashboard' };
+    if (p.startsWith('/my-work')) return { section: '', current: 'My Work' };
+    if (p.startsWith('/tasks')) return { section: '', current: 'Task Board' };
+    if (p.startsWith('/projects')) return { section: '', current: 'Project' };
+    if (p.startsWith('/teams')) return { section: '', current: 'Teams' };
     if (p.startsWith('/users')) return { section: '', current: 'User Management' };
     if (p.startsWith('/audit')) return { section: 'Compliance', current: 'Audit History' };
     if (p.startsWith('/chat')) return { section: '', current: 'Connect' };

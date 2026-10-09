@@ -55,12 +55,7 @@ function MyWork() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       
       {/* Page Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-        <div>
-          <h1 className="neu-title" style={{ fontSize: '26px' }}>My Work</h1>
-          <p className="neu-subtitle">Your personal sprint queue and assigned deliverables.</p>
-        </div>
-
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '24px' }}>
         <button
           className="neu-btn neu-btn-pill neu-btn-primary"
           style={{ padding: '10px 18px', fontSize: '13px' }}

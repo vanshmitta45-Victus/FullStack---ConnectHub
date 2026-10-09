@@ -100,29 +100,8 @@ function Dashboard() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
-      {/* Top Bar with Role Greeting & Segmented View Switcher */}
-      <div className="neu-panel" style={{ padding: '24px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <h1 className="neu-title" style={{ fontSize: '26px' }}>Welcome back, {currentUser}</h1>
-            <span style={{
-              background: 'var(--neu-accent)',
-              color: '#fff',
-              fontSize: '11px',
-              fontWeight: 'bold',
-              padding: '2px 8px',
-              borderRadius: '10px'
-            }}>
-              {currentRole}
-            </span>
-          </div>
-          <p className="neu-subtitle" style={{ marginTop: '6px', fontSize: '13px' }}>
-            {dashboardMode === 'MEMBER'
-              ? 'Personal deliverables queue, items due soon, blockers, and recent discussions.'
-              : 'Workspace health metrics, active user trends, system alerts, and project velocity.'}
-          </p>
-        </div>
-
+      {/* Top Bar with Segmented View Switcher */}
+      <div className="neu-panel" style={{ padding: '24px 30px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
         {/* View Mode Switcher: Member View vs Admin View */}
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <div className="neu-panel-inset" style={{ display: 'flex', padding: '4px', borderRadius: '24px' }}>

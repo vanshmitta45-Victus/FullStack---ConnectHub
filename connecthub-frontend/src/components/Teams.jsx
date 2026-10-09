@@ -211,12 +211,7 @@ function Teams() {
       )}
 
       {/* Top Header & View Switcher */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div>
-          <h1 className="neu-title" style={{ fontSize: '28px', marginBottom: '4px' }}>Teams & Workload Balancer</h1>
-          <p className="neu-subtitle">Functional squads, live capacity heatmaps, workload balancing, and linked chat channels.</p>
-        </div>
-
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           {/* Segmented View: Squads vs Workload Balancer */}
           <div className="neu-panel-inset" style={{ display: 'flex', padding: '4px', borderRadius: '24px' }}>

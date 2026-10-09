@@ -7,7 +7,7 @@ import org.openqa.selenium.WebDriver;
 /** Kanban board (/tasks) - TaskBoard.jsx markers. */
 public class ConnectHubTaskBoardPage {
     private final WebDriver driver;
-    private final By header = By.xpath("//*[contains(text(),'Project Kanban')]");
+    private final By header = By.xpath("//button[contains(.,'Create Issue')]");
     private final By createBtn = By.xpath("//button[contains(.,'Create Issue')]");
     private final By titleInput = By.xpath("//input[contains(@placeholder,'Implement')]");
     private final By search = By.xpath("//input[contains(@placeholder,'Search issues')]");
