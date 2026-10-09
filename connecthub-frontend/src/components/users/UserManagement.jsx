@@ -144,9 +144,13 @@ function UserManagement() {
   const token = localStorage.getItem('token');
   const currentUser = localStorage.getItem('username');
   const userRole = (localStorage.getItem('role') || 'MEMBER').toUpperCase();
-  const isAdmin = userRole === 'ADMIN';
-  const isManagerOrAdmin = ['ADMIN', 'PROJECT_MANAGER'].includes(userRole);
-  const isLeadOrAbove = ['ADMIN', 'PROJECT_MANAGER', 'TEAM_LEAD'].includes(userRole);
+  // Live role from the directory (localStorage role goes stale after admin promotion;
+  // the directory always carries the current role, so derive permissions from it)
+  const myProfile = users.find(u => u.username === currentUser);
+  const effectiveRole = ((myProfile && myProfile.role) || userRole).toUpperCase();
+  const isAdmin = effectiveRole === 'ADMIN';
+  const isManagerOrAdmin = ['ADMIN', 'PROJECT_MANAGER'].includes(effectiveRole);
+  const isLeadOrAbove = ['ADMIN', 'PROJECT_MANAGER', 'TEAM_LEAD'].includes(effectiveRole);
 
   const fetchDirectory = async () => {
     setIsLoading(true);
