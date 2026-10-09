@@ -1,8 +1,0 @@
-<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="DMShot" parallel="none">
-    <test name="shots">
-        <classes>
-            <class name="com.sdet.framework.tests.DmShotTest"/>
-        </classes>
-    </test>
-</suite>
